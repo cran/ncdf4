@@ -1065,11 +1065,23 @@ ncvar_change_missval <- function( nc, varid, missval ) {
 # or
 #	nc <- ncdf.create( "test.nc", salin )
 #
+# The final 4 optional parameters (h_minfree, v_align, v_minfree, r_align) give the user optional control over how
+# space is allocated in the file when it is created. They match the parameters of the same names in the native NetCDF4
+# function nc__enddef (see https://www.unidata.ucar.edu/software/netcdf/docs_rc/group__datasets.html#ga5fe4a3fcd6db18d0583ac47f04f7ac60).
+# Briefly:
+#
+#	h_minfree: number of additional free bytes to reserve in the header section
+#	v_align: alignment of beginning of fixed-size variables section (see documentation for details)
+#	v_minfree: number of additional free bytes to reserve in the fixed-size variables section
+#	r_align: alignment of beginning of record (unlimited-size) variables section (see documentation for details)
+#
+# Their default values are the normal defaults in NetCDF4 for these parameters.
+#
 # If safemode is set, then that will determine whether or not safemode is off
 # according to its value. Otherwise, safemode will be set to TRUE iff we are on the
 # Windows-64 platform.
 #
-nc_create <- function( filename, vars, force_v4=FALSE, verbose=FALSE ) {
+nc_create <- function( filename, vars, force_v4=FALSE, verbose=FALSE, h_minfree=0, v_align=4, v_minfree=0, r_align=4 ) {
 
 	if( verbose ) print(paste('nc_create: entering, package version', nc_version() ))
 
@@ -1305,7 +1317,7 @@ nc$safemode = FALSE
 	#-----------------
 	if( verbose ) print("nc_create: exiting define mode")
 	#nc_enddef( nc, ignore_safemode=TRUE )
-	nc_enddef( nc )
+	nc__enddef( nc, h_minfree, v_align, v_minfree, r_align )
 
 	#-----------------------------------------------------------------------
 	# Have to set the format string of the ncdf4 object.  We could calculate
@@ -2325,6 +2337,35 @@ nc_enddef <- function( nc ) {
 		}
 
 	rv = .C("R_nc4_enddef", as.integer(ncid2use), PACKAGE="ncdf4")
+
+	nc_sync( nc )
+}
+
+#===============================================================
+nc__enddef <- function( nc, h_minfree, v_align, v_minfree, r_align ) {
+
+	ignore_safemode = TRUE
+
+	numeric_id = FALSE
+
+	if( is.numeric(nc)) {
+		ncid2use <- nc
+		numeric_id = TRUE
+		}
+	else if( class(nc) == 'ncdf4' )
+		ncid2use <- nc$id
+	else
+		stop("First argument must be a simple integer ID or an object of class ncdf4, as returned by nc_open() or nc_create()")
+
+	#--------------------------------------------------------------------------------
+	# Has no meaning if we are in safemode since the file is closed every time anyway
+	#--------------------------------------------------------------------------------
+	if( ! numeric_id ) {
+		if( nc$safemode && (! ignore_safemode))
+			return()
+		}
+
+	rv = .C("R_nc4__enddef", as.integer(ncid2use), as.integer(h_minfree), as.integer(v_align), as.integer(v_minfree), as.integer(r_align), PACKAGE="ncdf4")
 
 	nc_sync( nc )
 }

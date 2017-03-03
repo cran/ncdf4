@@ -23,6 +23,16 @@ void R_nc4_enddef( int *ncid )
 }
 
 /*********************************************************************/
+void R_nc4__enddef( int *ncid, int *h_minfree, int *v_align, int *v_minfree, int *r_align)
+{
+	int	err;
+	err = nc__enddef(*ncid, *h_minfree, *v_align, *v_minfree, *r_align);
+	if( err != NC_NOERR )
+		Rprintf( "Error in R_nc4__enddef: %s\n",
+			nc_strerror(err) );
+}
+
+/*********************************************************************/
 void R_nc4_sync( int *ncid )
 {
 	int	err;
