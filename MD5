@@ -1,7 +1,7 @@
 6349e4bb96c92e1f11ed21ccc87921a7 *ChangeLog
-ba4d0693bb53f87c0d17eff7a132df83 *DESCRIPTION
+cd76ac11939971929bb51fed85ee6644 *DESCRIPTION
 36c1fbaaed8bc2fb94337130abd73011 *NAMESPACE
-991a6594d03ec1a9d7172664b8ee0060 *R/ncdf4.R
+d55a9cee7303135159edcb7518398d8f *R/ncdf4.R
 777eba9944e67d13aac05649cd647add *R/ncdf4_priv.R
 d1115214348c8570d76389ba49626130 *R/ncdf4_priv_att.R
 79b5675030428c59e2bcfa615e0b8ec3 *R/ncdf4_priv_dim.R
@@ -9,6 +9,7 @@ d1115214348c8570d76389ba49626130 *R/ncdf4_priv_att.R
 848679a3905f3019119cbfd996ab83e0 *R/ncdf4_priv_var.R
 375cb891a49b0b7c57a1aff35daf1193 *cleanup
 d166b74624cd62256b6491b849d5e3ee *configure
+08cc998ccc00e5ab6cbb6e67e7a5354c *configure.ac
 a06df3f633622526b02785e5442b4835 *inst/HDF5_COPYING
 b6edd0b113e654540165a2b53d1e81d8 *man/ancvar_put.Rd
 b256db50eaf9b1638ae3badef997ac4a *man/nc_close.Rd
@@ -32,7 +33,4 @@ b369a7b9533b2746c1d9ed42c6647f51 *man/print.ncdf4.Rd
 78d681e25a4cad63030a0de445d13fa5 *src/Makevars.in
 3f869799c5a06e5ccdeca7bb6ea5d29e *src/Makevars.win
 d525349389ed27a5b374052c1099d7fa *src/ncdf.c
-b4d36900efe0d6045f65d132445a9b6d *tools/aclocal.m4
-54f32ede0c409c04707dd0ebb9175900 *tools/configure.ac
 c385dcbf01f753e75aee4c5db9a66337 *tools/netcdf.m4
-f695d66e71d8028902b4801b5ecb5023 *tools/regenerate

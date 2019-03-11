@@ -1,4 +1,5 @@
 AC_INIT(src/Makevars.in)
+m4_include([tools/netcdf.m4])
 
 echo "configure.ac: starting"
 

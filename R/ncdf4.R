@@ -1952,7 +1952,7 @@ ncvar_put <- function( nc, varid=NA, vals=NULL, start=NA, count=NA, verbose=FALS
 
 	varsize <- ncvar_size ( ncid2use, varid2use )
 	ndims   <- ncvar_ndims( ncid2use, varid2use )
-	is_scalar = (varsize == 1) && (ndims == 0)
+	is_scalar = all(varsize == 1) && all(ndims == 0)
 	if( verbose ) {
 		print(paste("ncvar_put: varsize="))
 		print(varsize)
