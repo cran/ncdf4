@@ -56,5 +56,8 @@ for( i in 1:nt ) {
 
 # Always remember to close the file when done!!
 nc_close(nc)
+
+# Clean up example
+file.remove( "temperature.nc" )
 }
 \keyword{utilities}

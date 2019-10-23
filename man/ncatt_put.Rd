@@ -55,5 +55,8 @@ ncatt_put( ncnew, 0, "globalatt_short", 7, prec="short" )
 ncatt_put( ncnew, 0, "description", 
 	"this is a test file with attributes of various types")
 nc_close(ncnew)
+
+# Clean up our test
+file.remove( filename )
 }
 \keyword{utilities}

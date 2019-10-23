@@ -130,5 +130,8 @@ ncid_old <- ncvar_add( ncid_old, var_cf )
 print(ncid_old)
 
 nc_close( ncid_old )
+
+# Clean up our example
+file.remove( output_fname )
 }
 \keyword{utilities}

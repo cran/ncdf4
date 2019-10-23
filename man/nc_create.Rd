@@ -55,5 +55,8 @@ popAlabama <- 4447100
 ncvar_put( ncnew, varPop, popAlabama, start=1, count=1 )
 
 nc_close(ncnew)
+
+# Clean up example
+file.remove( "states_population.nc" )
 }
 \keyword{utilities}

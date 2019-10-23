@@ -146,5 +146,11 @@ ncid <- nc_create( "colornames.nc", list(varcolors) )
 ncvar_put( ncid, "colors", cnames, verbose=TRUE )
 
 nc_close( ncid )
+
+#---------
+# Clean up
+#---------
+file.remove( "colornames.nc" )
+file.remove( "writevals.nc" )
 }
 \keyword{utilities}

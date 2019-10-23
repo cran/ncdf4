@@ -129,7 +129,7 @@
 #======================================================================================================
 nc_version <- function() {
 	
-	return("ncdf4_1.16_20170401")
+	return("ncdf4_1.17_20191022")
 
 }
 
@@ -182,7 +182,11 @@ ncdim_def <- function( name, units, vals, unlim=FALSE, create_dimvar=TRUE,
 			stop(paste("Error trying to create dimension named",name,": create_dimvar was specified",
 				"to be FALSE, which indicates that NO dimensional variable is to be created;",
 				"in this case, the unit string MUST be empty ('') and the dimension values MUST",
-				"be simple integers from 1 to the length of the dimension (e.g., 1:len)"))
+				"be simple integers from 1 to the length of the dimension (e.g., 1:len)",
+				"So, in summary, this units string must be blank:", units, 
+				"This storage mode of the vals must be integer:", storage.mode(vals) ,
+				"This first value of the dim vals must be 1:", vals[1],
+				"This last value of the dim vals must be the length:", vals[len] ))
 		}
 
 	dim <- list()

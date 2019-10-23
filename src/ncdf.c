@@ -1005,10 +1005,10 @@ void R_nc4_put_att_double( int *ncid, int *varid, char **attname,
 void R_nc4_put_att_text( int *ncid, int *varid, char **attname, 
 		int *type_to_create, int *natts, char **attribute, int *retval )
 {
-	nc_type ttc;
+	/* nc_type ttc; */
 	size_t attlen;
 
-	ttc = R_nc4_ttc_to_nctype( *type_to_create );
+	/* ttc = R_nc4_ttc_to_nctype( *type_to_create ); */
 	/* For some reason the C interface does not include the nc_type for this call */
 
 	attlen = strlen(attribute[0]);
@@ -2297,7 +2297,7 @@ SEXP R_nc4_get_vara_numvarid( SEXP sx_nc, SEXP sx_varid, SEXP sx_start, SEXP sx_
 	int 	varid, ncid, ndims, len_start, len_count, i, j, ierr,
 		start_arg[MAX_NC_DIMS], count_arg[MAX_NC_DIMS],
 		*data_addr_i, missval_i, ndims_cgt1;
-	SEXP 	rv_data = R_NilValue /* -Wall */, sx_ncdf_var, sx_dim;
+	SEXP 	rv_data = R_NilValue /* -Wall */, sx_dim;
 	size_t	start[MAX_NC_DIMS], count[MAX_NC_DIMS], varsize[MAX_NC_DIMS], tot_var_size,
 		i_szt;
 	double	*data_addr_d, missval_d, missval_tol;
@@ -2317,7 +2317,6 @@ SEXP R_nc4_get_vara_numvarid( SEXP sx_nc, SEXP sx_varid, SEXP sx_start, SEXP sx_
 
 	varid = INTEGER(sx_varid)[0];
 	ncid  = INTEGER(R_ncu4_getListElement( sx_nc, "id" ))[0];
-	sx_ncdf_var = R_ncu4_getListElement( sx_nc, "var" );
 
 	/*-----------------------------------------------------------------------
 	 * Copy passed start and count to local vars so we can modify them safely
@@ -2545,7 +2544,7 @@ Rprintf( "warning, no match found for element %s\n", str );
 SEXP R_nc4_get_vara_string( SEXP sx_nc, SEXP sx_varid, SEXP sx_start, SEXP sx_count ) 
 {
 	SEXP	sx_retval, sx_retnames, sx_retstrings, sx_reterror;
-	int	i, ierr, nchar, varid, ncid, ndims, count_int[MAX_NC_DIMS], start_int[MAX_NC_DIMS], len_count, len_start; 
+	int	i, ierr, varid, ncid, ndims, count_int[MAX_NC_DIMS], start_int[MAX_NC_DIMS], len_count, len_start; 
 	size_t	count[MAX_NC_DIMS], start[MAX_NC_DIMS], tot_count, isz;
 	char 	**ss;
 
@@ -2607,7 +2606,7 @@ SEXP R_nc4_get_vara_string( SEXP sx_nc, SEXP sx_varid, SEXP sx_start, SEXP sx_co
 
 	PROTECT( sx_retstrings = allocVector( STRSXP, tot_count ));
 	for( isz=0L; isz<tot_count; isz++ ) {
-		nchar = strlen( ss[isz] );
+		/* nchar = strlen( ss[isz] ); */
 		SET_STRING_ELT( sx_retstrings, isz, mkChar(ss[isz]) );
 		}
 

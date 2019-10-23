@@ -286,8 +286,11 @@ vobjtovarid4 <- function( nc, varid, verbose=FALSE, allowdimvar=TRUE) {
 			if( class(varid) != 'ncid4' )
 				stop(paste("Internal error #D, returned varid is not a object of class ncid4"))
 			if( verbose )
-				print(paste("vobjtovarid4: returning with DIMvarid deduced from name; varid=",
-					varid$group_id, varid$id))
+				print(paste("vobjtovarid4: returning with DIMvarid deduced from name; varid$group_id=",
+					varid$group_id, 'varid$id=', varid$id))
+			if( varid$id == -1 ) 
+				print(paste("vobjtovarid4: **** WARNING **** I was asked to get a varid for dimension named",
+					origvarid, "BUT this dimension HAS NO DIMVAR! Code will probably fail at this point"))
 			return(varid)	# an object of class 'ncid4'
 			}
 		}
@@ -844,7 +847,9 @@ ncvar_get_inner <- function( ncid, varid, missval, addOffset=0., scaleFact=1.0, 
 	#--------------------------------------------------------
 	# Set our dims...but collapse degenerate dimensions first
 	#--------------------------------------------------------
-	if( ndims > 0 ) {
+	if( verbose ) print(paste("ncvar_get_inner: will collapse degen dims if ndims > 0. ndims=", ndims, 
+			' collapse_degen=', collapse_degen, ' precint=', precint ))
+	if( (ndims > 0) && (length(rv$data) > 0)) {
 		if( collapse_degen ) {
 			count.nodegen <- vector()
 			foundone <- 0
@@ -863,7 +868,7 @@ ncvar_get_inner <- function( ncid, varid, missval, addOffset=0., scaleFact=1.0, 
 					dim(rv$data) <- count.nodegen
 				}
 			}
-		else
+		else if( precint != 5 ) 
 			dim(rv$data) = count
 
 		if( verbose ) {
@@ -879,6 +884,7 @@ ncvar_get_inner <- function( ncid, varid, missval, addOffset=0., scaleFact=1.0, 
 	# NOTE: if type is 3 or 4 (float or double), the missing
 	# value was already set by the C routine.
 	#----------------------------------------------------------
+	if( verbose ) print(paste("ncvar_get_inner: will now consider changing missing values to NA..."))
 	if( (!raw_datavals) && (precint != 5) && (precint != 3) && (precint != 4) ) {	# not char, float, or double
 		if( verbose ) print("ncvar_get: setting missing values to NA")
 		if( (precint==1) || (precint==2) || (precint==6) || (precint==7) || (precint==8) || (precint==9)) {

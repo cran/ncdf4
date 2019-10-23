@@ -115,6 +115,10 @@ for( i in 1:nc$ndims ) {
 	print(d$vals)
 	print(paste("    Unlimited:",d$unlim))
 	}
+nc_close( nc )
+
+# Clean up example
+file.remove( filename )
 }
 \note{It is good practice, but not necessary, to pass the dimension's values 
  to this routine when the dimension is created.  It is also possible to 

@@ -1,1 +1,15 @@
-PKG_LIBS = -lnetcdf4 -L$(LIB_HDF5)/lib${R_ARCH} -lhdf5_hl -lhdf5 -lz
+VERSION=4.4.1.1-dap
+PKG_CPPFLAGS = -I../windows/netcdf-${VERSION}/include
+PKG_LIBS = -L../windows/netcdf-${VERSION}/lib${R_ARCH} \
+	-lnetcdf -lcurl -lhdf5_hl -lhdf5 -lszip -lz \
+	-lws2_32 -lcrypt32 -lwldap32
+
+all: clean winlibs
+
+winlibs:
+	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" "../tools/winlibs.R" ${VERSION}
+
+clean:
+	rm -Rf $(SHLIB) $(OBJECTS)
+
+.PHONY: all winlibs clean

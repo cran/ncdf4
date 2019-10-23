@@ -107,5 +107,8 @@ data <- ncvar_get(ncold)
 print("here is the data in the file:")
 print(data)
 nc_close( ncold )
+
+# Clean up example
+file.remove( "states_population.nc" )
 }
 \keyword{utilities}

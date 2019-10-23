@@ -90,5 +90,8 @@ nc_close(nc)
 # the variable is set automatically by this function, but it is 
 # up to you whether or not you want to read in all the existing
 # data and change the values to the new missing value.
+
+# Clean up our example
+file.remove( "transect.nc" )
 }
 \keyword{utilities}

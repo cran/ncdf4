@@ -100,5 +100,8 @@ ncid_old <- ncvar_rename( ncid_old, old_varname, new_varname )
 print(ncid_old)
 
 nc_close( ncid_old )
+
+# Clean up our example
+file.remove( output_fname )
 }
 \keyword{utilities}

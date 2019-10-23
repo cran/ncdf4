@@ -90,5 +90,10 @@ doitfor( nc, var, "testatt_wacko" )
 doitfor( nc, 0,   "globalatt_int" )
 doitfor( nc, 0,   "globalatt_short" )
 doitfor( nc, 0,   "description" )
+nc_close( nc )
+
+# Clean up after our test
+file.remove( filename )
+
 }
 \keyword{utilities}

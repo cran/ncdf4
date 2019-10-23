@@ -80,6 +80,7 @@
  \code{\link[ncdf4]{ncvar_put}}.
 }
 \examples{
+\donttest{
 # Start with the simplest example.  If the file only has one variable in it,
 # you can read the data as easily as this:
 #
@@ -136,5 +137,6 @@ for( i in 1:nt ) {
 	}
 
 nc_close(nc)
+}
 }
 \keyword{utilities}
