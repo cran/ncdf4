@@ -80,7 +80,9 @@
  \code{\link[ncdf4]{ncvar_put}}.
 }
 \examples{
-\donttest{
+\dontrun{
+## This would have been created in example(ncdim_def), but it was deleted there.
+
 # Start with the simplest example.  If the file only has one variable in it,
 # you can read the data as easily as this:
 #

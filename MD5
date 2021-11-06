@@ -1,5 +1,5 @@
 e7d7af36dcba7caa16ba462d23775bd1 *ChangeLog
-50daf2c5965cf5e2abe46e693b1c57ba *DESCRIPTION
+6d25c59959d628b8af0b1dcffede0bd7 *DESCRIPTION
 36c1fbaaed8bc2fb94337130abd73011 *NAMESPACE
 97ecfbd4c8964a482215ee69efb21d51 *R/ncdf4.R
 777eba9944e67d13aac05649cd647add *R/ncdf4_priv.R
@@ -8,8 +8,8 @@ d1115214348c8570d76389ba49626130 *R/ncdf4_priv_att.R
 78e728236a2b1b66903c2c3650813bbb *R/ncdf4_priv_group.R
 f62807d2dec63341b27f6e4b14198cd5 *R/ncdf4_priv_var.R
 375cb891a49b0b7c57a1aff35daf1193 *cleanup
-d166b74624cd62256b6491b849d5e3ee *configure
-eca25d4fbad5877ea3527db3d6b49513 *configure.ac
+3ff34136d4234e1b688cab0f880304e4 *configure
+dd3bd371bb3102f9346afb7a1fc144fd *configure.ac
 a06df3f633622526b02785e5442b4835 *inst/HDF5_COPYING
 1f9c32b885a1a3aaca9f0e86ea184f40 *man/ancvar_put.Rd
 b256db50eaf9b1638ae3badef997ac4a *man/nc_close.Rd
@@ -27,14 +27,11 @@ be1d10ce5e79fc0376ecf38c26621f29 *man/ncdim_def.Rd
 6ee5358435f13d1f8d1a94386c62d566 *man/ncvar_add.Rd
 a425ebc2623587f1f2fbe601b6d8e2fa *man/ncvar_change_missval.Rd
 fa2c36b4b08b3773e103fad201a9a1ee *man/ncvar_def.Rd
-0b92b4cb7af87de7312441fca4adf3d7 *man/ncvar_get.Rd
+502b0c437edde68ed65baa4f032b316b *man/ncvar_get.Rd
 c39f1cb4330f09ef3adc980908ffdfb2 *man/ncvar_rename.Rd
-c3d09bd8cd68e58c39cdf9ad0a4fe19f *man/print.ncdf4.Rd
+5b3232754db0831fcc725c3e2d8c7552 *man/print.ncdf4.Rd
 78d681e25a4cad63030a0de445d13fa5 *src/Makevars.in
 a4c6502d32145531debeff453406b6cf *src/Makevars.win
 5fdbf5cac13e0b52a5c6e96c77b55f8c *src/ncdf.c
-b4d36900efe0d6045f65d132445a9b6d *tools/aclocal.m4
-eca25d4fbad5877ea3527db3d6b49513 *tools/configure.ac
 c385dcbf01f753e75aee4c5db9a66337 *tools/netcdf.m4
-f695d66e71d8028902b4801b5ecb5023 *tools/regenerate
 2dfd9d1ed07c40cd694379210383ebac *tools/winlibs.R

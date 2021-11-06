@@ -1,8 +1,9 @@
-AC_INIT(src/Makevars.in)
+AC_INIT
+AC_CONFIG_SRCDIR([src/Makevars.in])
 
 echo "configure.ac: starting"
 
-m4_pattern_allow(AC_PATH_NETCDF)
+AC_CONFIG_MACRO_DIR([tools])
 
 : ${R_HOME=`R RHOME`}
 if test -z "${R_HOME}"; then
@@ -41,7 +42,8 @@ AC_SUBST(NETCDF_LDFLAGS)
 AC_SUBST(NETCDF_RPATH)
 AC_SUBST(HAVE_NETCDF)
 
-AC_OUTPUT(src/Makevars)
+AC_CONFIG_FILES([src/Makevars])
+AC_OUTPUT
 
 echo " "
 echo "**********************  Results of ncdf4 package configure *******************"

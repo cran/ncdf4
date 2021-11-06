@@ -28,7 +28,7 @@
  \code{\link[ncdf4]{ncvar_def}}
 }
 \examples{
-\donttest{
+\dontrun{
 # Open a netCDF file, print information about it
 nc <- nc_open( "salinity.nc" )
 print(nc)
