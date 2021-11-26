@@ -64,6 +64,7 @@
  \code{\link[ncdf4]{ncvar_get}}.
 }
 \examples{
+\dontrun{
 #--------------------------------
 # Make a few dimensions we can use
 #--------------------------------
@@ -138,7 +139,7 @@ dimcolorno <- ncdim_def("colorno", "", 1:nstrings, create_dimvar=FALSE )
 # which suppresses creation of a units attribute, and the missing value
 # is entirely omitted, which suppresses creation of the missing value att
 #------------------------------------------------------------------------
-varcolors  <- ncvar_def("colors", "", list(dimnchar, dimcolorno), 
+varcolors  <- ncvar_def("colors", "", list(dimnchar, dimcolorno), " ",
 			prec="char" )
 
 ncid <- nc_create( "colornames.nc", list(varcolors) )
@@ -152,5 +153,6 @@ nc_close( ncid )
 #---------
 file.remove( "colornames.nc" )
 file.remove( "writevals.nc" )
+}
 }
 \keyword{utilities}

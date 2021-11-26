@@ -129,7 +129,7 @@
 #======================================================================================================
 nc_version <- function() {
 	
-	return("ncdf4_1.17_20191022")
+	return("ncdf4_1.18_20211125")
 
 }
 
@@ -183,7 +183,7 @@ ncdim_def <- function( name, units, vals, unlim=FALSE, create_dimvar=TRUE,
 				"to be FALSE, which indicates that NO dimensional variable is to be created;",
 				"in this case, the unit string MUST be empty ('') and the dimension values MUST",
 				"be simple integers from 1 to the length of the dimension (e.g., 1:len)",
-				"So, in summary, this units string must be blank:", units, 
+				'So, in summary, this units string must be blank: "', units, '" ',
 				"This storage mode of the vals must be integer:", storage.mode(vals) ,
 				"This first value of the dim vals must be 1:", vals[1],
 				"This last value of the dim vals must be the length:", vals[len] ))
@@ -245,7 +245,7 @@ print.ncdf4 <- function( x, ... ) {
 
 	nc <- x
 
-	is_netcdf_v4 = (nc$format == 'NC_FORMAT_NETCDF4')
+	is_netcdf_v4 = ((nc$format == 'NC_FORMAT_NETCDF4') || (nc$format == 'NC_FORMAT_NETCDF4_CLASSIC' ))
 	is_GMT       = ifelse( nc$is_GMT, ' (GMT format)', '' )
 	is_safemode  = ifelse( nc$safemode, ' (SAFE MODE ON)', '' )
 
@@ -312,16 +312,30 @@ print.ncdf4 <- function( x, ... ) {
 	cat("\n    ",nc$ndims,"dimensions:\n")
 	if( nc$ndims > 0 )
 		for( i in 1:nc$ndims ) {
+
+			has_dimvar = ( nc$dim[[i]]$dimvarid$id != -1 )
+
 			tag <- ''
 			if( nc$dim[[i]]$unlim )
 				tag <- '   *** is unlimited ***'
-			cat(paste0("        ", nc$dim[[i]]$name, "  Size:", nc$dim[[i]]$len, tag, '\n' ))
-			atts <- ncatt_get( nc, nc$dim[[i]]$name )
-			natts <- length(atts)
-			if( natts > 0 ) {
-				nms <- names( atts )
-				for( ia in 1:natts ) 
-					cat(paste0("            ", nms[ia], ": ", atts[[ia]], '\n' ))
+
+			tag2 = ''
+			if( ! has_dimvar )
+				tag2 = '(no dimvar)'
+
+			cat(paste0("        ", nc$dim[[i]]$name, "  Size:", nc$dim[[i]]$len, tag, ' ', tag2, '\n' ))
+
+			#----------------
+			# Get dimvar atts
+			#----------------
+			if( has_dimvar ) {
+				atts <- ncatt_get( nc, nc$dim[[i]]$name )
+				natts <- length(atts)
+				if( natts > 0 ) {
+					nms <- names( atts )
+					for( ia in 1:natts ) 
+						cat(paste0("            ", nms[ia], ": ", atts[[ia]], '\n' ))
+					}
 				}
 			}
 
@@ -385,6 +399,12 @@ ncvar_def <- function( name, units, dim, missval, longname=name, prec="float",
 		stop("Passed a var precision (prec) that is NOT a string of characters!")
 	if( prec == 'single' )
 		prec = 'float'
+
+	# Not sure if this is really needed or not. It breaks package efts ... maybe having
+	# this check is too restrictive.
+	# DWP 2021/11/25
+	#if( (prec == 'char') && (nchar(missval) == 0))
+	#	stop(paste("Error, when defining a character variable, the supplied missing value cannot be zero length! Error occurred when trying to define variable", name ))
 
 	if( verbose ) print(paste('ncvar_def: prec=', prec))
 	if( !is.na(compression)) {
@@ -519,8 +539,15 @@ ncvar_def <- function( name, units, dim, missval, longname=name, prec="float",
 # If 'safemode' is NOT set, then safemode will be OFF unless
 # we are on the Windows-64 platform, in which case it will be ON.
 #
+# If return_on_error is FALSE, this routine halts with an error
+# message if an error is encountered. If no error is encountered,
+# rv$error is set to FALSE. If return_on_error is TRUE, this routine
+# always returns, and rv$error is set to TRUE if there was an
+# error, and FALSE if there was no error.
+#
 nc_open <- function( filename, write=FALSE, readunlim=TRUE, verbose=FALSE,
-		auto_GMT=TRUE, suppress_dimvals=FALSE ) {
+		auto_GMT=TRUE, suppress_dimvals=FALSE,
+		return_on_error=FALSE) {
 
 	safemode = FALSE
 
@@ -544,15 +571,25 @@ nc_open <- function( filename, write=FALSE, readunlim=TRUE, verbose=FALSE,
 		id=as.integer(rv$id),		# note: nc$id is the simple integer ncid of the base file (root group in the file)
 		error=as.integer(rv$error),
 		PACKAGE="ncdf4")
-	if( rv$error != 0 ) 
-		stop(paste("Error in nc_open trying to open file",filename))
+	if( rv$error != 0 ) {
+		if( return_on_error ) {
+			print(paste("Error in nc_open trying to open file",filename, '(setting rv$error TRUE and returning because return_on_error==TRUE)' ))
+			rv$error = TRUE
+			return( rv )	# Note this is not a full ncdf4 type object, just a little stub with error == TRUE
+			}
+		else
+			stop(paste("Error in nc_open trying to open file",filename, '(return_on_error=', return_on_error, ')'))
+		}
+
+	rv$error = FALSE
+
 	if( verbose )
 		print(paste("nc_open: back from call to R_nc4_open, ncid=",rv$id))
 
 	#-------------------------------------------------
 	# Now we make our elaborate ncdf class object
 	#-------------------------------------------------
-	nc <- list( filename=filename, writable=write, id=rv$id )
+	nc <- list( filename=filename, writable=write, id=rv$id, error=rv$error )
 	attr(nc,"class") <- "ncdf4"
 
 	#---------------------------------------------------------
@@ -638,6 +675,13 @@ nc$safemode = FALSE
 		}
 	nc$groups <- groups
 
+	#---------------------------
+	# Print groups for debugging
+	#---------------------------
+	#for( ig in 1:length( nc$groups )) {
+	#	print(paste( ig, groups[[ig]]$id, ' : ', groups[[ig]]$name, ' ', groups[[ig]]$fqgn ))
+	#	}
+
 	#--------------------------------------------------------------------------------------
 	# Construct mapping between fully qualified group name and R index into the groups list
 	#--------------------------------------------------------------------------------------
@@ -654,7 +698,7 @@ nc$safemode = FALSE
 				'fqgn= "', groups[[ig]]$fqgn, '"',
 				"nvars=", groups[[ig]]$nvars,
 				"ndims=", groups[[ig]]$ndims,
-				"dimid=")) 
+				"dimid="))
 			print( groups[[ig]]$dimid )
 			}
 		}
@@ -696,7 +740,14 @@ nc$safemode = FALSE
 					groups[[ig]]$ndims ))
 				print("Here are the dimids from the ncgroup object:")
 				print( groups[[ig]]$dimid )
-				stop("Error, cannot have NAs as dimids!")
+
+				if( return_on_error ) {
+					print(paste("Error in nc_open trying to open file",filename, '(setting rv$error TRUE and returning because return_on_error==TRUE)' ))
+					nc$error = TRUE
+					return( nc )
+					}
+				else
+					stop("Error, cannot have NAs as dimids!")
 				}
 
 			if( verbose )
@@ -717,7 +768,7 @@ nc$safemode = FALSE
 			# dim name.  Fix that now
 			#---------------------------------------------------------------------
 			if( groups[[ig]]$name != "" )	# this comparison is FALSE if this is the root group
-				d$name <- paste( groups[[ig]]$name, "/", d$name, sep='' )	# example: "model1/run1/longitude".  NO leading slash!
+				d$name <- paste( groups[[ig]]$fqgn, "/", d$name, sep='' )	# example: "model1/run1/longitude".  NO leading slash!
 
 			d$group_index 	<- ig
 			d$group_id	<- groups[[ig]]$id
@@ -846,12 +897,12 @@ nc$safemode = FALSE
 				# Fix that now.
 				#--------------------------------------------------------------------------------
 				if( groups[[ig]]$name != "" )	# this comparison is FALSE if this is the root group
-					v$name <- paste( groups[[ig]]$name, "/", v$name, sep='' )	# example: "model1/run1/Temperature".  NO leading slash!
+					v$name <- paste( groups[[ig]]$fqgn, "/", v$name, sep='' )	# example: "model1/run1/Temperature".  NO leading slash!
 
 				#---------------------------------------------------
 				# Get netcdf-4 specific information for the variable
 				#---------------------------------------------------
-				if( nc$format == 'NC_FORMAT_NETCDF4' ) {
+				if( (nc$format == 'NC_FORMAT_NETCDF4') || (nc$format == 'NC_FORMAT_NETCDF4_CLASSIC')) {
 
 					#-----------------------
 					# Inquire about chunking
@@ -1309,7 +1360,12 @@ nc$safemode = FALSE
 	#-----------------
 	if( verbose ) print("nc_create: exiting define mode")
 	#nc_enddef( nc, ignore_safemode=TRUE )
-	nc_enddef( nc )
+	if( nc_enddef( nc ) != 0 ) {
+		print(paste("Error, nc_enddef returned an error! Error happened with filename=", filename, "and vars:"))
+		for( kk in 1:length(vars))
+			print(paste(kk, ':', vars[[kk]]$name ))
+		stop('fatal error in nc_create')
+		}
 
 	#-----------------------------------------------------------------------
 	# Have to set the format string of the ncdf4 object.  We could calculate
@@ -1672,7 +1728,8 @@ ncvar_add <- function( nc, v, verbose=FALSE, indefine=FALSE ) {
 	if( ! indefine ) {
 		if( verbose ) print("ncvar_add: ending define mode")
 		#nc_enddef( nc, ignore_safemode=TRUE )	# Exit define mode
-		nc_enddef( nc )	# Exit define mode
+		if( nc_enddef( nc ) != 0 ) 
+			stop(paste("Error, nc_enddef returned an error!"))
 		}
 
 	#----------------------------------------------------------------
@@ -1696,8 +1753,15 @@ ncvar_add <- function( nc, v, verbose=FALSE, indefine=FALSE ) {
 # is TRUE if the variable had an attribute with name "attname", and
 # is FALSE otherwise.  Second element of the list (named "value")
 # holds the value IFF the variable had an attribute of that name.
-# "varid" can be an integer (R-type varid with counting starting
-# at 1), object of class ncvar4, or character string with a var's name.
+#
+# "varid" can be one of:
+#	* a character string with a var's name
+#	* an integer varid (R-type varid with counting starting at 1)
+#	* an object of class ncvar4
+#	* the integer value 0 for a global att
+#	* a fully qualified group name, in which case that group's
+#	  "global" atts will be accessed
+#
 # If the attribute type is short or integer, an integer value is
 # returned.  If the attribute type is float or double, a double
 # value is returned.  If the attribute type is text, a character
@@ -1723,20 +1787,45 @@ ncatt_get <- function( nc, varid, attname=NA, verbose=FALSE ) {
 	if( nc$safemode )
 		nc$id = ncdf4_inner_open( nc )
 
+	#----------------------------------------
+	# Is varid a string? If so, is it a FQGN?
+	#----------------------------------------
+	glist_index = -1
+	vid_sm = storage.mode( varid )
+	if( vid_sm == 'character' ) 
+		glist_index = nc_is_a_fqgn( varid, nc )
+
 	#----------------------------------------------------------------------------
 	# Atts have a special case where an integer 0 means to access the global atts
 	#----------------------------------------------------------------------------
+	is_global = FALSE
 	if( is.numeric(varid) && (varid == 0)) {
 		is_global = TRUE
 		if( verbose ) print('ncatt_get: is a global att')
 		}
+
+	#----------------------------------------------------------------------------------
+	# In netcdf-4, atts have another special case where the varid can refer exclusively
+	# to a fully qualified group name (FQGN), *not* a variable name. In that event,
+	# it is referring to "global-like" atts in that specified group
+	#----------------------------------------------------------------------------------
+	else if( (vid_sm == "character") && ( glist_index > 0 ) ) {
+		#----------------------------------------------------------------------------
+		# If we get here, the varid is specifing a group name, and we want a "global"
+		# attribute from that group. glist_index is the INDEX into ncid$group[[]]
+		# for the group in question (the one where varid is the FQGN)
+		#----------------------------------------------------------------------------
+		group_id = nc$group[[ glist_index ]]$id 
+		return( ncatt_get_inner( group_id, -1, attname=attname, verbose=verbose ))	# NOTE how we convert from varid=0 to varid=-1 here to match C API standard
+		}
+
 	else
 		{
 		if( (class(varid) != "ncvar4") && (!is.character(varid)))
 			stop(paste("second arg (varid) must be one of: 0, an object of class ncvar4, or the character string name of a variable"))
 		if( verbose ) print('ncatt_get: is NOT a global att')
-		is_global = FALSE
 		}
+
 
 	if( is_global ) {
 		if( verbose ) print('ncatt_get: calling ncatt_get_inner for a global att')
@@ -1744,7 +1833,7 @@ ncatt_get <- function( nc, varid, attname=NA, verbose=FALSE ) {
 		}
 	else
 		{
-		if( (class(varid) != "ncvar4") && ( storage.mode(varid) != "character" )) 
+		if( (class(varid) != "ncvar4") && ( vid_sm != "character" )) 
 			stop("ncvar_change_missval: error, passed varid must be either 0 (for global attributes), the name of the variable to operate on, or an object of class ncvar4")
 		if( verbose ) print('ncatt_get: getting object id')
 		idobj <- vobjtovarid4( nc, varid, allowdimvar=TRUE, verbose=verbose )	# an object of class 'ncid4'
@@ -1880,6 +1969,12 @@ ncvar_put <- function( nc, varid=NA, vals=NULL, start=NA, count=NA, verbose=FALS
 	if( class(nc) != 'ncdf4' )
 		stop(paste("Error: first argument to ncvar_put must be an object of type ncdf,",
 			"as returned by a call to nc_open(...,write=TRUE) or nc_create"))
+
+	#---------------------------------------------
+	# Make sure the passed ncid is a writable file
+	#---------------------------------------------
+	if( ! nc$writable ) 
+		stop(paste("Error: called with a nc object that is NOT a writable netcdf file! Passed nc file name:", nc$filename ))
 
 	if( (mode(varid) != 'character') && (class(varid) != 'ncvar4') && (class(varid) != 'ncdim4') && (! is.na(varid)))
 		stop(paste("Error: second argument to ncvar_put must be either an object of type ncvar,",
@@ -2253,6 +2348,7 @@ ncvar_get <- function( nc, varid=NA, start=NA, count=NA, verbose=FALSE, signedby
 		scaleFact = nc$var[[li]]$scaleFact
 	else
 		scaleFact = 1.0;
+	if( verbose ) print(paste("ncvar_get: addOffset=", addOffset, "scaleFact=", scaleFact ))
 
 	ncid2use  = idobj$group_id
 	varid2use = idobj$id
@@ -2366,9 +2462,15 @@ nc_enddef <- function( nc ) {
 			return()
 		}
 
-	rv = .C("R_nc4_enddef", as.integer(ncid2use), PACKAGE="ncdf4")
+	rv = list( error=0 )
+
+	rv = .C("R_nc4_enddef", as.integer(ncid2use), error=as.integer(rv$error), PACKAGE="ncdf4")
+	if( rv$error != 0 )
+		return( -1 )
 
 	nc_sync( nc )
+
+	return( 0 )
 }
 
 #===============================================================
@@ -2454,7 +2556,9 @@ ncvar_rename <- function( nc, old_varname, new_varname, verbose=FALSE ) {
 
 	if( def_mode ) {
 		#nc_enddef( nc, ignore_safemode=TRUE )
-		nc_enddef( nc )
+		if( nc_enddef( nc ) != 0 ) {
+			stop(paste("Error, nc_enddef returned an error! old, new varnames:", old_varname, new_varname ))
+			}
 		}
 
 	#--------------------------------------------------------------

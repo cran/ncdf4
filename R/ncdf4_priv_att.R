@@ -249,8 +249,10 @@ ncatt_put_inner = function( ncid, varid, attname, attval, prec=NA, verbose=FALSE
 	else
 		stop(paste("ncatt_put: error, passed an attribute with a storage mode not handled.  Att name:",attname,"Att value:",attval,"Storage mode passed:",storage.mode(attval),".  Handled types: integer double character"))
 
-	if( ! definemode )
-		nc_enddef(ncid)
+	if( ! definemode ) {
+		if( nc_enddef( ncid ) != 0 ) 
+			stop(paste("Error, nc_enddef returned an error!"))
+		}
 }
 
 #===================================================================================================

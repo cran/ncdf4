@@ -114,6 +114,7 @@
  \code{\link[ncdf4]{ncvar_put}}.
 }
 \examples{
+\dontrun{
 # Define an integer dimension 
 dimState <- ncdim_def( "StateNo", "count", 1:50 )
 
@@ -166,5 +167,6 @@ nc_close(nctypes)
 # Clean up example
 file.remove( filename )
 file.remove( "vartypes.nc" )
+}
 }
 \keyword{utilities}

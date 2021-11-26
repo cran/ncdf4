@@ -24,6 +24,7 @@
 }
 \author{David W. Pierce \email{dpierce@ucsd.edu}}
 \examples{
+\dontrun{
 # The time you would use the sync.ncdf function is when you have an unlimited
 # dimension and are writing to the file timestep-by-timestep. Make a netCDF file 
 # that has an unlimited dimension for illustration.
@@ -59,5 +60,6 @@ nc_close(nc)
 
 # Clean up example
 file.remove( "temperature.nc" )
+}
 }
 \keyword{utilities}

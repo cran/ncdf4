@@ -38,6 +38,7 @@
  \code{\link[ncdf4]{ncatt_get}}.
 }
 \examples{
+\dontrun{
 # Make a simple netCDF file
 filename <- "atttest_types.nc"
 dim <- ncdim_def( "X", "inches", 1:12 )
@@ -58,5 +59,6 @@ nc_close(ncnew)
 
 # Clean up our test
 file.remove( filename )
+}
 }
 \keyword{utilities}

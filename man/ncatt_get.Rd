@@ -13,7 +13,11 @@
  \item{varid}{The variable whose attribute is to be read.  Can be a
  character string with the variable's name or an object of class \code{ncvar4}.
  As a special case, if varid==0, then a global (file) 
- attribute will be read rather than a particular variable's attribute.}
+ attribute will be read rather than a particular variable's attribute.
+ In netcdf version 4 files, attributes can be stored in a group without
+ an associated variable (as if they were global attributes for the group
+ instead of for the file). In this case, set varid to a string holding the fully qualified
+ group name using forward slashes for subgroups. For example, "group1/metadata".}
  \item{attname}{Name of the attribute to read; if not specified, a list
  containg ALL attributes of the selected variable or file is returned.}
  \item{verbose}{If TRUE, then debugging information is printed.}
@@ -49,6 +53,7 @@
  \code{\link[ncdf4]{ncatt_put}}.
 }
 \examples{
+\dontrun{
 # Make a simple netCDF file
 filename <- "atttest_types.nc"
 dim <- ncdim_def( "X", "inches", 1:12 )
@@ -95,5 +100,6 @@ nc_close( nc )
 # Clean up after our test
 file.remove( filename )
 
+}
 }
 \keyword{utilities}

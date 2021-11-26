@@ -88,6 +88,7 @@
  \code{\link[ncdf4]{ncvar_def}}, \code{\link[ncdf4]{nc_create}}
 }
 \examples{
+\dontrun{
 # Define some straightforward dimensions
 x <- ncdim_def( "Lon", "degreesE", 0.5:359.5)
 y <- ncdim_def( "Lat", "degreesN", as.double(-89:89))
@@ -119,6 +120,7 @@ nc_close( nc )
 
 # Clean up example
 file.remove( filename )
+}
 }
 \note{It is good practice, but not necessary, to pass the dimension's values 
  to this routine when the dimension is created.  It is also possible to 

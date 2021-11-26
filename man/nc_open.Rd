@@ -6,7 +6,7 @@
 }
 \usage{
  nc_open( filename, write=FALSE, readunlim=TRUE, verbose=FALSE, 
- 	auto_GMT=TRUE, suppress_dimvals=FALSE )
+ 	auto_GMT=TRUE, suppress_dimvals=FALSE, return_on_error=FALSE )
 }
 \arguments{
  \item{filename}{Name of the existing netCDF file to be opened.}
@@ -19,6 +19,9 @@
  \item{auto_GMT}{If TRUE, then GMT files are automatically detected. Does not yet do anything.}
  \item{suppress_dimvals}{If TRUE, then NO dimensional values are automatically read in from the file. (Use
  this if there are so many dimensional values that a out-of-memory error is generated).}
+ \item{return_on_error}{If TRUE, then nc_open always returns, and returned list 
+ element $error will be TRUE if an error was encountered and FALSE if no error was encountered. 
+ If return_on_error is FALSE (the default), nc_open halts with an error message if an error is encountered.}
 }
 \value{
  An object of class \code{ncdf4} that has the fields described above.
@@ -78,6 +81,7 @@
  \code{\link[ncdf4]{ncdim_def}}, \code{\link[ncdf4]{ncvar_def}}, \code{\link[ncdf4]{ncatt_put}}. 
 }
 \examples{
+\dontrun{
 # Define an integer dimension 
 dimState <- ncdim_def( "StateNo", "count", 1:50 )
 
@@ -110,5 +114,6 @@ nc_close( ncold )
 
 # Clean up example
 file.remove( "states_population.nc" )
+}
 }
 \keyword{utilities}

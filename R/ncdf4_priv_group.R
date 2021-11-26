@@ -499,3 +499,30 @@ nc_make_group_inner <- function( parentid, group_name ) {
 	return( newgroup$gid )
 }
 
+#===================================================================
+# Inputs:
+#	ss	: string. Possibly the fully qualified group name (fqgn)
+#		  of a group in a netcdf file
+#	ncid	: the ncdf4 object for a netcdf file
+#
+# Return value:
+#	the INDEX in the ncid$group[[]] list if ss IS a FQGN
+#		in file ncid, and
+#	-1 otherwise.
+#
+nc_is_a_fqgn <- function( ss, ncid ) {
+
+	if( storage.mode(ss) != 'character') return(-1)
+
+	ng = length( ncid$group )
+
+	if( ng < 1 ) return( -1 )	# no groups in file, so ss cannot be the FQGN of a group in the file
+
+	for( ig in 1:ng ) {
+		if( ss == ncid$group[[ig]]$fqgn )
+			return( ig )
+		}
+
+	return( -1 )
+}
+

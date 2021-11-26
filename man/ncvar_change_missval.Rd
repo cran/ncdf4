@@ -50,6 +50,7 @@
  \code{\link[ncdf4]{ncvar_def}}.
 }
 \examples{
+\dontrun{
 # Make an example netCDF file with a given missing value.  We will
 # then change the missing value in the file using ncvar_change_missval
 
@@ -93,5 +94,6 @@ nc_close(nc)
 
 # Clean up our example
 file.remove( "transect.nc" )
+}
 }
 \keyword{utilities}

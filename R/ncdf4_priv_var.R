@@ -666,9 +666,9 @@ ncvar_get_inner <- function( ncid, varid, missval, addOffset=0., scaleFact=1.0, 
 			}
 		}
 	if( verbose ) {
-		print("ncvar_get: start:")
+		print("ncvar_get_inner: start:")
 		print(start)
-		print("ncvar_get: count:")
+		print("ncvar_get_inner: count:")
 		print(count)
 		}
 
@@ -719,12 +719,12 @@ ncvar_get_inner <- function( ncid, varid, missval, addOffset=0., scaleFact=1.0, 
 		}
 
 	else if( (precint == 3) || (precint == 4)) {
-		#----------------------------------------------------------------
-		# Float, double where we have the C routine fix the missing value
+		#-----------------------------------------------------------------
+		# Float, double where we have the C routine fix the missing value.
 		# 'imvstate' is: 0 if we do not have a missing value (it is NULL),
 		# 1 if the missing value is NA, 2 if the missing value is present
-		# and not NULL and not NA. These codes are used by the C routine
-		#----------------------------------------------------------------
+		# and not NULL and not NA. These codes are used by the C routine.
+		#-----------------------------------------------------------------
 		if( is.null( missval )) {
 			passed_missval = 0.0
 			imvstate = as.integer(0)

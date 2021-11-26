@@ -127,7 +127,10 @@ ncdim_create <- function( nc, d, verbose=FALSE ) {
 		# Put in the dimvals as specified.
 		#---------------------------------
 		#nc_enddef( nc, ignore_safemode=TRUE )		# Must exit define mode for this
-		nc_enddef( nc )
+		if( nc_enddef( nc ) != 0 ) {
+			stop(paste("Error, nc_enddef returned an error when trying to ncdim_create dim named", d$name ))
+			}
+
 		rv <- list()
 		rv$error <- -1
 		start <- 0		# Use C convention
@@ -161,8 +164,14 @@ ncdim_create <- function( nc, d, verbose=FALSE ) {
 				}
 			else
 				stop(paste("ncdim_create: unknown storage mode:",storage.mode(d$vals),"for dim",d$name))
-			if( rv_error != 0 )
-				stop("Error in ncdim_create, while writing dimvar values!")
+			if( rv_error != 0 ) {
+				print("Error in ncdim_create, while writing dimvar values!")
+				print("Here is the dim structure I was passed that triggered the error:")
+				print(paste("name=", d$name ))
+				print(paste("len=", d$len ))
+				print(paste("unlim=", d$unlim ))
+				stop('fatal error in ncdf4_priv_dim.R::ncdim_create')
+				}
 			}
 		#nc_redef( nc, ignore_safemode=TRUE )	# Go back into define mode
 		nc_redef( nc )

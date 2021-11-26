@@ -81,7 +81,7 @@ void R_nc4_inq_varid_hier( int *ncid, char **varname, int *returned_grpid, int *
 void R_nc4_get_vara_text( int *ncid, int *varid, int *start, int *count, char **tempstore, char **data, int *retval );
 void R_nc4_put_vara_text( int *ncid, int *varid, int *start, int *count, char **data, int *retval );
 
-void R_nc4_enddef( int *ncid );
+void R_nc4_enddef( int *ncid, int *retval );
 void R_nc4_sync  ( int *ncid );
 void R_nc4_close ( int *ncid );
 
@@ -168,7 +168,7 @@ R_CMethodDef cMethods[] = {
 	{"R_nc4_get_vara_text", 	(DL_FUNC) &R_nc4_get_vara_text,  	7},
 	{"R_nc4_put_vara_text", 	(DL_FUNC) &R_nc4_put_vara_text,  	6},
 
-	{"R_nc4_enddef", 		(DL_FUNC) &R_nc4_enddef,  		1},
+	{"R_nc4_enddef", 		(DL_FUNC) &R_nc4_enddef,  		2},
 	{"R_nc4_sync", 			(DL_FUNC) &R_nc4_sync,  		1},
 	{"R_nc4_close", 		(DL_FUNC) &R_nc4_close,  		1},
 
@@ -423,6 +423,11 @@ SEXP Rsx_nc4_get_vara_double( SEXP sx_ncid, SEXP sx_varid, SEXP sx_start, SEXP s
 	fixmiss		= INTEGER(sx_fixmiss )[0];
 	imvstate	= INTEGER(sx_imvstate)[0];
 	missval		= REAL   (sx_missval )[0];
+
+	/*
+	Rprintf( "Rsx_nc4_get_vara_double: entering with ncid=%d varid=%d, fixmiss=%d, imvstate=%d, missval=%lf\n",
+		ncid, varid, fixmiss, imvstate, missval );
+	*/
 
 	/* Get number of dimensions in this variable */
 	err = nc_inq_varndims( ncid, varid, &ndims );
@@ -2016,13 +2021,15 @@ void R_nc4_inq_varid_hier( int *ncid, char **varname, int *returned_grpid, int *
 }
 
 /*********************************************************************/
-void R_nc4_enddef( int *ncid )
+void R_nc4_enddef( int *ncid, int *retval )
 {
 	int	err;
 	err = nc_enddef(*ncid);
 	if( err != NC_NOERR ) 
 		Rprintf( "Error in R_nc4_enddef: %s\n", 
 			nc_strerror(err) );
+
+	*retval = err;
 }
 
 /*********************************************************************/

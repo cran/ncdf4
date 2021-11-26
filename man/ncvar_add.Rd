@@ -53,6 +53,7 @@
  \code{\link[ncdf4]{ncvar_def}}.
 }
 \examples{
+\dontrun{
 #===========================================================================
 # PART 1.  MAKE A TEST NETCDF FILE THAT WE WILL ADD A VARIABLE TO IN PART 2.
 #===========================================================================
@@ -133,5 +134,6 @@ nc_close( ncid_old )
 
 # Clean up our example
 file.remove( output_fname )
+}
 }
 \keyword{utilities}
