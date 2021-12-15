@@ -1,6 +1,6 @@
 Package: ncdf4
-Version: 1.18
-Date: 2021-11-17
+Version: 1.19
+Date: 2021-12-14
 Title: Interface to Unidata netCDF (Version 4 or Earlier) Format Data
         Files
 Author: David Pierce <dpierce@ucsd.edu>
@@ -10,6 +10,6 @@ SystemRequirements: netcdf library version 4.1 or later
 License: GPL (>= 3)
 URL: http://cirrus.ucsd.edu/~pierce/ncdf/
 NeedsCompilation: yes
-Packaged: 2021-11-26 18:17:23 UTC; pierce
+Packaged: 2021-12-14 20:06:59 UTC; pierce
 Repository: CRAN
-Date/Publication: 2021-11-26 18:50:07 UTC
+Date/Publication: 2021-12-15 04:10:06 UTC
