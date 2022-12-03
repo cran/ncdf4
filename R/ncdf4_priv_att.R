@@ -212,6 +212,11 @@ ncatt_put_inner = function( ncid, varid, attname, attval, prec=NA, verbose=FALSE
 		}
 
 	else if( storage.mode(attval) == "character") {
+
+		if( verbose ) 
+			print(paste0("Calling R_nc4_put_att_text with name >", attname, "< att_len: ", 
+				as.integer(length(attval)), ' value: >', attval, '<' ))
+
 		rv <- .C("R_nc4_put_att_text",
 			as.integer(ncid),
 			as.integer(varid),

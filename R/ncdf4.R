@@ -129,7 +129,9 @@
 #======================================================================================================
 nc_version <- function() {
 	
-	return("ncdf4_1.19_20211214")
+	ncdf_lib_vers <- .Call("R_nc4_inq_libvers", PACKAGE="ncdf4")
+
+	return(paste("ncdf4_1.20_20221130 | underlying netcdf library version", ncdf_lib_vers ))
 
 }
 
@@ -381,7 +383,7 @@ print.ncdf4 <- function( x, ... ) {
 #
 # To make a var with no dims, pass an empty list: "list()"
 
-ncvar_def <- function( name, units, dim, missval, longname=name, prec="float", 
+ncvar_def <- function( name, units, dim, missval=NULL, longname=name, prec="float", 
 		shuffle=FALSE, compression=NA, chunksizes=NA, verbose=FALSE ) {
 
 	if( verbose ) print('ncvar_def: entering')
@@ -448,7 +450,17 @@ ncvar_def <- function( name, units, dim, missval, longname=name, prec="float",
 	# value argument at all. Also, you can now specify a missing value of NA by passing
 	# a NA.
 	#----------------------------------------------------------------------------------
-	if( missing(missval) || is.null(missval))
+	zero_len_char = FALSE
+	if (prec == 'char') {
+		if( is.null( missval ))
+			zero_len_char = TRUE
+		else if( is.na( missval ))
+			zero_len_char = TRUE
+		else if( nchar(missval) == 0 )
+			zero_len_char = TRUE
+		}	
+
+	if( missing(missval) || is.null(missval) || zero_len_char )
 		var$make_missing_value = FALSE
 	else
 		{
@@ -487,13 +499,13 @@ ncvar_def <- function( name, units, dim, missval, longname=name, prec="float",
 	# Have to figure out if 'dim' is a ncdim object or 
 	# a LIST of ncdim objects.
 	#-----------------------------------------------------
-	if( is.character(class(dim)) && (class(dim) == "ncdim4") )
+	if( inherits( dim, 'ncdim4' ))
 		dim <- list(dim)
 	var$dim  <- dim
 	var$ndims <- length(var$dim)
 	if( var$ndims > 0 ) {
 		for( i in 1:var$ndims ) {
-			if( class(var$dim[[i]]) != "ncdim4" ) {
+			if( ! inherits( var$dim[[i]], "ncdim4" )) {
 				print(paste("Error, passed variable has a dim that is NOT of class ncdim4!"))
 				print(paste("Error occurred when processing dim number",i,"of variable",var$name))
 				stop(paste("This dim has class:", class(var$dim[[i]])))
@@ -1003,7 +1015,7 @@ nc$safemode = FALSE
 					if( storage.mode(v$missval) == "character" ) {
 						v$missval <- as.double( v$missval )
 						if(! have_warned_noncompliant ) {
-							print(paste("WARNING file",filename,"is not compliant netCDF; variable",name," is numeric but has a character-type missing value! This is an error!  Compensating, but you should fix the file!"))
+							warning(paste("WARNING file",filename,"is not compliant netCDF; variable",name," is numeric but has a character-type missing value! This is an error!  Compensating, but you should fix the file!"))
 							have_warned_noncompliant <- TRUE 
 							}
 						}
@@ -1077,7 +1089,8 @@ nc$safemode = FALSE
 #
 ncvar_change_missval <- function( nc, varid, missval ) {
 
-	if( class(nc) != "ncdf4" ) 
+	#if( class(nc) != "ncdf4" ) 
+	if( ! inherits( nc, 'ncdf4' ))
 		stop("ncvar_change_missval: passed nc NOT of class ncdf4!")
 
 	#------------------------------------------------------
@@ -1139,21 +1152,28 @@ nc_create <- function( filename, vars, force_v4=FALSE, verbose=FALSE ) {
 	# vars is a single var, then this will equal "ncvar"; 
 	# if vars orig is a list of vars, this will be NULL.
 	#----------------------------------------------------
-	if( is.character(class(vars)) && (class(vars) == "ncvar4") ) {
+	#if( is.character(class(vars)) && (class(vars) == "ncvar4") ) {
+	if( inherits( vars, 'ncvar4' )) {
 		vars <- list(vars)
 		if( verbose )
 			print("nc_create: input was a single var")
 		}
-	else if(is.character(class(vars)) && (class(vars) == "list") ) { 
+
+	#else if(is.character(class(vars)) && (class(vars) == "list") ) { 
+	else if( inherits( vars, 'list' )) {
 		if( length(vars) < 1 ) 
 			stop("Error, at least one ncvar object must be supplied in the vars list")
-		if( (! is.character(class(vars[[1]]))) || (class(vars[[1]]) != "ncvar4"))
+
+		#if( (! is.character(class(vars[[1]]))) || (class(vars[[1]]) != "ncvar4"))
+		if( ! inherits( vars[[1]], 'ncvar4' )) 
 			stop("Error, second arg must either be a ncvar object (created by a call to ncvar_def()) or a list of ncvar objects")
 		#-------------------------------------------------------
 		# Make sure ALL elements in the list are of class ncvar4
 		#-------------------------------------------------------
 		for( ilist in nc4_loop(2,length(vars)) )
-			if( (! is.character(class(vars[[ilist]]))) || (class(vars[[ilist]]) != "ncvar4"))
+
+			#if( (! is.character(class(vars[[ilist]]))) || (class(vars[[ilist]]) != "ncvar4"))
+			if( ! inherits( vars[[ilist]], 'ncvar4' ))
 				stop(paste("Error, found an element of the vars list that is NOT an object created by a call to ncvar_def...element #",ilist,sep=''))
 		if( verbose )
 			print("nc_create: input was a list of vars")
@@ -1410,13 +1430,15 @@ ncvar_add <- function( nc, v, verbose=FALSE, indefine=FALSE ) {
 	if( verbose )
 		print(paste("ncvar_add: entering with indefine=",indefine))
 
-	if( class(nc) != "ncdf4" ) 
+	#if( class(nc) != "ncdf4" ) 
+	if( ! inherits( nc, 'ncdf4' ))
 		stop("ncvar_add: passed nc NOT of class ncdf4!")
 	if( verbose )
 		print(paste("ncvar_add: ncid of file to add to=",nc$id,
 			"   filename=",nc$filename,"    writable=",nc$writable))
 
-	if( class(v) != "ncvar4" ) 
+	#if( class(v) != "ncvar4" ) 
+	if( ! inherits( v, 'ncvar4' ))
 		stop("var.add.ncdf: passed var NOT of class ncvar4! The second arg to var.add.ncdf must be the return value from a call to ncvar_def")
 	if( verbose )
 		print(paste("ncvar_add: varname to add=",v$name))
@@ -1546,7 +1568,7 @@ ncvar_add <- function( nc, v, verbose=FALSE, indefine=FALSE ) {
 		vars_fqgn <- nc4_basename( v$name, dir=TRUE )	# this is the var's fully qualified GROUP name
 		gidx      <- nc$fqgn2Rindex[[ vars_fqgn ]]
 		if( is.null(gidx)) {
-			print(paste('internal error: did not find fully qualified group name "', vars_fqgn, '" in list of groups for file', nc$filename, sep=''))
+			print(paste('internal error: did not find fully qualified group name "', vars_fqgn, '" in list of groups for file >', nc$filename, '<', sep=''))
 			if( is.null( nc$fqgn2Rindex )) 
 				print('Reason: nc$fqgn2Rindex is empty (null)!')
 			else
@@ -1778,7 +1800,8 @@ ncatt_get <- function( nc, varid, attname=NA, verbose=FALSE ) {
 
 	if( verbose ) print('ncatt_get: entering')
 
-	if( class(nc) != "ncdf4" ) 
+	#if( class(nc) != "ncdf4" ) 
+	if( ! inherits( nc, 'ncdf4' ))
 		stop("Error, first passed argument must be an object of class ncdf4")
 
 	#----------------------------------------------------
@@ -1821,7 +1844,9 @@ ncatt_get <- function( nc, varid, attname=NA, verbose=FALSE ) {
 
 	else
 		{
-		if( (class(varid) != "ncvar4") && (!is.character(varid)))
+		#if( (class(varid) != "ncvar4") && (!is.character(varid)))
+		is_class_ncvar4 = ( inherits( varid, 'ncvar4' ))
+		if( ( ! is_class_ncvar4) && (!is.character(varid)))
 			stop(paste("second arg (varid) must be one of: 0, an object of class ncvar4, or the character string name of a variable"))
 		if( verbose ) print('ncatt_get: is NOT a global att')
 		}
@@ -1833,8 +1858,11 @@ ncatt_get <- function( nc, varid, attname=NA, verbose=FALSE ) {
 		}
 	else
 		{
-		if( (class(varid) != "ncvar4") && ( vid_sm != "character" )) 
+		#if( (class(varid) != "ncvar4") && ( vid_sm != "character" )) 
+		is_class_ncvar4 = ( inherits( varid, 'ncvar4' ))
+		if( (! is_class_ncvar4) && ( vid_sm != "character" )) 
 			stop("ncvar_change_missval: error, passed varid must be either 0 (for global attributes), the name of the variable to operate on, or an object of class ncvar4")
+
 		if( verbose ) print('ncatt_get: getting object id')
 		idobj <- vobjtovarid4( nc, varid, allowdimvar=TRUE, verbose=verbose )	# an object of class 'ncid4'
 		if( idobj$id == -1 )
@@ -1884,7 +1912,8 @@ ncatt_put <- function( nc, varid, attname, attval, prec=NA,
 
 	if( verbose ) print('ncatt_put: entering' )
 
-	if( class(nc) != "ncdf4" ) 
+	#if( class(nc) != "ncdf4" ) 
+	if( ! inherits( nc, 'ncdf4' ))
 		stop("Error, first passed argument must be an object of class ncdf4")
 
 	#-------------------------------------------------------
@@ -1907,7 +1936,9 @@ ncatt_put <- function( nc, varid, attname, attval, prec=NA,
 		is_global = TRUE
 	else
 		{
-		if( (class(varid) != "ncvar4") && (!is.character(varid)))
+		#if( (class(varid) != "ncvar4") && (!is.character(varid)))
+		is_class_ncvar4 = ( inherits( varid, 'ncvar4' ))
+		if( (! is_class_ncvar4) && (!is.character(varid)))
 			stop(paste("second arg (varid) must be one of: 0, an object of class ncvar4, or the character string name of a variable"))
 		is_global = FALSE
 		}
@@ -1966,7 +1997,8 @@ ncvar_put <- function( nc, varid=NA, vals=NULL, start=NA, count=NA, verbose=FALS
 
 	if( verbose ) print('ncvar_put: entering')
 
-	if( class(nc) != 'ncdf4' )
+	#if( class(nc) != 'ncdf4' )
+	if( ! inherits( nc, 'ncdf4' ))
 		stop(paste("Error: first argument to ncvar_put must be an object of type ncdf,",
 			"as returned by a call to nc_open(...,write=TRUE) or nc_create"))
 
@@ -1976,7 +2008,9 @@ ncvar_put <- function( nc, varid=NA, vals=NULL, start=NA, count=NA, verbose=FALS
 	if( ! nc$writable ) 
 		stop(paste("Error: called with a nc object that is NOT a writable netcdf file! Passed nc file name:", nc$filename ))
 
-	if( (mode(varid) != 'character') && (class(varid) != 'ncvar4') && (class(varid) != 'ncdim4') && (! is.na(varid)))
+	is_class_ncvar4 = ( inherits( varid, 'ncvar4' ))
+	is_class_ncdim4 = ( inherits( varid, 'ncdim4' ))
+	if( (mode(varid) != 'character') && ( ! is_class_ncvar4 ) && (! is_class_ncdim4 ) && (! is.na(varid)))
 		stop(paste("Error: second argument to ncvar_put must be either an object of type ncvar,",
 			"as returned by a call to ncvar_def, or the character-string name of a variable",
 			"in the file.  If there are multiple vars in the file with the same name (but",
@@ -1991,7 +2025,8 @@ ncvar_put <- function( nc, varid=NA, vals=NULL, start=NA, count=NA, verbose=FALS
 	# the dimvar, because that is matched on the dimvar list as well as the var list.
 	# To avoid this error, we force all matches to be by name, rather than by var object
 	#-----------------------------------------------------------------------------------
-	if( (class(varid) == 'ncvar4') || (class(varid) == 'ncdim4')) {
+	#if( (class(varid) == 'ncvar4') || (class(varid) == 'ncdim4')) {
+	if( is_class_ncvar4 || is_class_ncdim4 ) {
 		varid = varid$name
 		if( verbose ) print(paste("ncvar_put: converting passed ncvar4/ncdim4 object to the name:", varid))
 		}
@@ -2245,12 +2280,15 @@ ncvar_put <- function( nc, varid=NA, vals=NULL, start=NA, count=NA, verbose=FALS
 #
 ncvar_get <- function( nc, varid=NA, start=NA, count=NA, verbose=FALSE, signedbyte=TRUE, collapse_degen=TRUE, raw_datavals=FALSE ) {
 
-	if( class(nc) != "ncdf4" )
+	#if( class(nc) != "ncdf4" )
+	if( ! inherits( nc, 'ncdf4' ))
 		stop("first argument (nc) is not of class ncdf4!")
 
 	if( verbose ) print(paste("ncvar_get: entering for read from file", nc$filename))
 
-	if( (mode(varid) != 'character') && (class(varid) != 'ncvar4') && (class(varid) != 'ncdim4') && (! is.na(varid)))
+	is_class_ncvar4 = ( inherits( varid, 'ncvar4' ))
+	is_class_ncdim4 = ( inherits( varid, 'ncdim4' ))
+	if( (mode(varid) != 'character') && ( ! is_class_ncvar4) && ( ! is_class_ncdim4) && (! is.na(varid)))
 		stop(paste("Error: second argument to ncvar_get must be an object of type ncvar or ncdim",
 			"(both parts of the ncdf object returned by nc_open()), the character-string name of a variable or dimension",
 			"or NA to get the default variable from the file.  If the file is netcdf version 4",
@@ -2392,7 +2430,7 @@ nc_sync <- function( nc ) {
 		ncid2use <- nc
 		is_numeric = TRUE
 		}
-	else if( class(nc) == 'ncdf4' )
+	else if( inherits( nc, 'ncdf4' ))
 		ncid2use <- nc$id
 	else
 		stop("First argument must be a simple integer ID or an object of class ncdf4, as returned by nc_open() or nc_create()")
@@ -2418,7 +2456,7 @@ nc_redef <- function( nc ) {
 		numeric_id = TRUE
 		ncid2use <- nc
 		}
-	else if( class(nc) == 'ncdf4' )
+	else if( inherits( nc, 'ncdf4' ))
 		ncid2use <- nc$id
 	else
 		stop("First argument must be a simple integer ID or an object of class ncdf4, as returned by nc_open() or nc_create()")
@@ -2449,7 +2487,7 @@ nc_enddef <- function( nc ) {
 		ncid2use <- nc
 		numeric_id = TRUE
 		}
-	else if( class(nc) == 'ncdf4' )
+	else if( inherits( nc, 'ncdf4' ))
 		ncid2use <- nc$id
 	else
 		stop("First argument must be a simple integer ID or an object of class ncdf4, as returned by nc_open() or nc_create()")
@@ -2483,7 +2521,7 @@ nc_close <- function( nc ) {
 		return()
 		}
 
-	if( class(nc) == 'ncdf4' )
+	if( inherits( nc, 'ncdf4' ))
 		ncid2use <- nc$id
 	else
 		stop("First argument must be an object of class ncdf4, as returned by nc_open() or nc_create()")
@@ -2510,7 +2548,7 @@ ncvar_rename <- function( nc, old_varname, new_varname, verbose=FALSE ) {
 	#--------------------------
 	# Check inputs for validity
 	#--------------------------
-	if(class(nc) != "ncdf4")
+	if( ! inherits( nc, 'ncdf4' ))
 		stop("Error, ncvar_rename passed something NOT of class ncdf4!")
 
 	if( ! is.character(old_varname))

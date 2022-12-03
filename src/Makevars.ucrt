@@ -1,8 +1,6 @@
-VERSION=4.4.1.1-dap
-PKG_CPPFLAGS = -I../windows/netcdf-${VERSION}/include
 
 PKG_LIBS = \
--lnetcdf -lmfhdf -lhdf5_hl -lportablexdr -ldf -lhdf5 -lcurl -lrtmp -lssl -lssh2 -lidn2 -lunistring -liconv -lgcrypt -lcrypto -lgpg-error -lwsock32 -lws2_32 -ljpeg -lz -lcfitsio -lzstd -lsbml-static -lcrypt32 -lwldap32
+-lnetcdf -lmfhdf -lhdf5_hl -lportablexdr -ldf -lhdf5 -lsz -lcurl -lbcrypt -lrtmp -lssl -lssh2 -lidn2 -lunistring -liconv -lgcrypt -lcrypto -lgpg-error -lwsock32 -lws2_32 -ljpeg -lz -lcfitsio -lzstd -lsbml-static -lcrypt32 -lwldap32
 
 all: clean 
 

@@ -259,7 +259,8 @@ ncdf4_format <- function( root_id ) {
 #
 ncdf4_inner_open = function( nc ) {
 
-	if( class( nc ) != 'ncdf4' ) 
+	#if( class( nc ) != 'ncdf4' ) 
+	if( ! inherits( nc, 'ncdf4' ))
 		stop(paste("ncdf4 library: internal error: ncdf4_inner_open called with an object that is NOT class ncdf4!"))
 
 	rv <- list()

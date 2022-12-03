@@ -108,6 +108,8 @@ SEXP R_nc4_get_vara_numvarid( SEXP sx_nc, SEXP sx_varid, SEXP sx_start, SEXP sx_
 SEXP R_ncu4_getListElement(SEXP list, char *str);
 SEXP R_nc4_get_vara_string( SEXP sx_nc, SEXP sx_varid, SEXP sx_start, SEXP sx_count );
 
+SEXP R_nc4_inq_libvers( void );
+
 /* For C calls that don't use SEXP type args */
 static const
 R_CMethodDef cMethods[] = {
@@ -198,6 +200,8 @@ R_CallMethodDef callMethods[] = {
 	{"R_nc4_get_vara_numvarid", 	(DL_FUNC) &R_nc4_get_vara_numvarid, 	4},
 	{"R_ncu4_getListElement", 	(DL_FUNC) &R_ncu4_getListElement, 	2},
 	{"R_nc4_get_vara_string", 	(DL_FUNC) &R_nc4_get_vara_string, 	4},
+
+	{"R_nc4_inq_libvers", 		(DL_FUNC) &R_nc4_inq_libvers,  		0},
 
 	NULL
 };
@@ -1017,8 +1021,10 @@ void R_nc4_put_att_text( int *ncid, int *varid, char **attname,
 	/* For some reason the C interface does not include the nc_type for this call */
 
 	attlen = strlen(attribute[0]);
+
 	*retval = nc_put_att_text(*ncid, *varid, attname[0], 
 		attlen, attribute[0] );
+
 	if( *retval != NC_NOERR ) 
 		Rprintf( "Error in R_nc4_put_att_text: %s\n", 
 			nc_strerror(*retval) );
@@ -2543,6 +2549,34 @@ SEXP R_ncu4_getListElement(SEXP list, char *str)
 
 Rprintf( "warning, no match found for element %s\n", str );
 	return elmt;
+}
+
+/*********************************************************************************/
+SEXP R_nc4_inq_libvers( void ) 
+{
+	char 	buf[1000];
+	char	*tstr;
+	int	nn, kk;
+	SEXP	sx_retval, sx_string;
+
+	strncpy( buf, nc_inq_libvers(), 999 );
+
+	nn = strlen(buf);
+
+	tstr = R_alloc( nn+1, sizeof(char) );
+	for( kk=0; kk<nn; kk++ ) {
+		tstr[kk] = buf[kk];
+		}
+	tstr[nn] = '\0';
+
+	sx_string = PROTECT( mkChar( tstr ));
+
+	sx_retval = PROTECT( NEW_CHARACTER( 1 ));
+	SET_STRING_ELT( sx_retval, 0, sx_string );
+
+	UNPROTECT( 2 );
+	
+	return( sx_retval );
 }
 
 /*********************************************************************************

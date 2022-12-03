@@ -158,7 +158,8 @@ nc_get_grp_info <- function( gid, parent_fqgn, format ) {	# sets $name, $fqgn, $
 #
 nc_groups_below <- function( root_group, format ) {
 
-	if( class(root_group) != "ncgroup4" )
+	#if( class(root_group) != "ncgroup4" )
+	if( ! inherits( root_group, "ncgroup4" ))
 		stop(paste("error, nc_groups_below must be called with a ncgroup-class object"))
 
 	root_id <- root_group$id

@@ -66,8 +66,18 @@
  If the "_FillValue" attribute is found, then the ncdf4
  package transparently maps all the netcdf file's missing values to NA's; this
  is the most common case.
- (The attribute "missing_value" is also recognized if there is no "_FillValue
- attribute.) If the netcdf file does not have a missing value, then the ncdf4
+ The attribute "missing_value" is also recognized if there is no "_FillValue"
+ attribute. 
+ 
+ Some netcdf files specify both a "_FillValue" and a "missing_value" attribute
+ for a variable. If these two
+ attributes have the same value, then everything is fine. If they have different
+ values, I consider this a malformed netcdf file and I suggest you contact
+ the person who made your netcdf file to fix it. In this event you can
+ set the "raw_datavals" flag in the ncvar_get() call and handle the 
+ conflicting missing values however you want. 
+
+ If the netcdf file does not have a missing value, then the ncdf4
  package assigns a default missing value of 1.e30 to the netcdcf file so that R NA's,
  which are always possible in the R environment, can be sensibly handled
  in the netcdf file. On rare occasions this can cause problems with non-compliant

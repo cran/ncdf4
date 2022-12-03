@@ -6,7 +6,7 @@
  It is later written to disk using \code{nc_create()}.
 }
 \usage{
- ncvar_def( name, units, dim, missval, longname=name, prec="float", 
+ ncvar_def( name, units, dim, missval=NULL, longname=name, prec="float", 
  shuffle=FALSE, compression=NA, chunksizes=NA, verbose=FALSE )
 }
 \arguments{

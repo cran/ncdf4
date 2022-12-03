@@ -69,16 +69,23 @@ vobjtovarid4 <- function( nc, varid, verbose=FALSE, allowdimvar=TRUE) {
 	if( verbose )
 		print(paste("vobjtovarid4: entering"))
 
-	if( class(nc) != 'ncdf4' )
+	#if( class(nc) != 'ncdf4' )
+	if( ! inherits( nc, 'ncdf4' ))
 		stop('First passed argument (nc) must be an object of class ncdf4, as returned by nc_open() or nc_create()')
 
-	if( (class(varid) != 'ncvar4') && (class(varid) != 'ncdim4') && (class(varid) != 'ncid4') && (!is.character(varid)) && (!is.na(varid)))
+	isc_ncvar4 = ( inherits( varid, 'ncvar4' ))
+	isc_ncdim4 = ( inherits( varid, 'ncdim4' ))
+	isc_ncid4  = ( inherits( varid, 'ncid4' ))
+
+	#if( (class(varid) != 'ncvar4') && (class(varid) != 'ncdim4') && (class(varid) != 'ncid4') && (!is.character(varid)) && (!is.na(varid)))
+	if( (! isc_ncvar4) && ( ! isc_ncdim4) && ( ! isc_ncid4) && (!is.character(varid)) && (!is.na(varid)))
 		stop('Second passed argument (varid) must be an object of class ncvar4 or ncid4, the character string name of a variable, or a NA (indicating to use the only var in the file)')
 
 	#-------------------------------------------------------------
 	# Easiest case is if we were given a ncid object to begin with
 	#-------------------------------------------------------------
-	if( class(varid) == 'ncid4' ) {
+	#if( class(varid) == 'ncid4' ) {
+	if( isc_ncid4 ) {
 		if(verbose) print("vobjtovarid4: passed varid was an ncid, easy exit")
 		return( varid ) 	# an object of class 'ncid4', not a simple integer
 		}
@@ -86,7 +93,8 @@ vobjtovarid4 <- function( nc, varid, verbose=FALSE, allowdimvar=TRUE) {
 	#------------------------------------------------------------
 	# Handle case where we are given a ncvar object to begin with
 	#------------------------------------------------------------
-	if( class(varid) == "ncvar4" ) {
+	#if( class(varid) == "ncvar4" ) {
+	if( isc_ncvar4 ) {
 
 		origvarid <- varid
 		if(verbose)
@@ -98,7 +106,8 @@ vobjtovarid4 <- function( nc, varid, verbose=FALSE, allowdimvar=TRUE) {
 			print(paste('Hint: make SURE the variable was not only defined with a call to ncvar_def(), but also included in the list of variables passed to nc_create()'))
 			stop('stopping')
 			}
-		if( class(varid) != 'ncid4' ) {
+		#if( class(varid) != 'ncid4' ) {
+		if( isc_ncid4 ) {
 			print('------------------------------')
 			print("here is varid:")
 			print(varid)
@@ -130,7 +139,8 @@ vobjtovarid4 <- function( nc, varid, verbose=FALSE, allowdimvar=TRUE) {
 	#-------------------------------------------------------------
 	# Handle case where we are given an ncdim object to begin with 
 	#-------------------------------------------------------------
-	if( class(varid) == "ncdim4" ) {
+	#if( class(varid) == "ncdim4" ) {
+	if( isc_ncdim4 ) {
 
 		if( ! allowdimvar )
 			stop(paste("Error, I was NOT allowed to check dimvars, but the second argument passed was an object of class ncdim4!  Name=", varid$name))
@@ -163,7 +173,8 @@ vobjtovarid4 <- function( nc, varid, verbose=FALSE, allowdimvar=TRUE) {
 			#-----------------------------------------------------------
 			retval = ncdf4_make_id( id=-1, group_index=-1, group_id=-1, list_index=-1, isdimvar=TRUE ) 
 
-		if( class(retval) != 'ncid4' )
+		#if( class(retval) != 'ncid4' )
+		if( ! inherits( retval, 'ncid4' ))
 			stop(paste("Internal error #C, returned varid is not a object of class ncid4. Case with ncdim object passed; ncdim name=", varid$name))
 
 		if( verbose )
@@ -207,7 +218,8 @@ vobjtovarid4 <- function( nc, varid, verbose=FALSE, allowdimvar=TRUE) {
 				}
 			}
 		varid <- nc$var[[varToUse]]$id	# remember, an object of class 'ncid4', not a simple int
-		if( class(varid) != 'ncid4' )
+		#if( class(varid) != 'ncid4' )
+		if( ! inherits( varid, 'ncid4' ))
 			stop(paste("internal error #B, returned varid is not of class ncid4"))
 
 		if( verbose )
@@ -250,7 +262,8 @@ vobjtovarid4 <- function( nc, varid, verbose=FALSE, allowdimvar=TRUE) {
 			print(paste("Variable named",origvarid,"found in file with varid=",
 				nc$var[[varToUse]]$id$group_id, nc$var[[varToUse]]$id$id))
 		varid <- nc$var[[varToUse]]$id	# remember, an object of class 'ncid4', not a simple int
-		if( class(varid) != 'ncid4' ) {
+		#if( class(varid) != 'ncid4' ) {
+		if( ! inherits( varid, 'ncid4' )) {
 			print('---- varid:')
 			print(varid)
 			stop(paste("internal error #A, returned varid is not of class ncid4"))
@@ -283,7 +296,8 @@ vobjtovarid4 <- function( nc, varid, verbose=FALSE, allowdimvar=TRUE) {
 			# Yes, it IS a dimvar!
 			#---------------------
 			varid <- nc$dim[[i]]$dimvarid 	# note: an object of class 'ncid4'.  $id will be -1 if there is no dimvar
-			if( class(varid) != 'ncid4' )
+			#if( class(varid) != 'ncid4' )
+			if( ! inherits( varid, 'ncid4' ))
 				stop(paste("Internal error #D, returned varid is not a object of class ncid4"))
 			if( verbose )
 				print(paste("vobjtovarid4: returning with DIMvarid deduced from name; varid$group_id=",

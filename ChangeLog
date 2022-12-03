@@ -1,3 +1,7 @@
+Release 1.20 (2022-11-30) Small warning message bug fix (thank you
+to Javier Vaquero-Martinez!) and updates to windows Makefile requested by
+CRAN (Tomas Kalibera).
+
 Release 1.19 (2021-12-14) Changed as per request of R developers
 to build correctly on Windows using the new R toolchain (Rtools42).
 Specifically, added the supplided Makevars.ucrt to src/.

@@ -2,9 +2,12 @@
 #===============================================================
 ncdim_same <- function( d1, d2 ) {
 
-	if( class(d1) != "ncdim4" ) 
+	#if( class(d1) != "ncdim4" ) 
+	if( ! inherits( d1, 'ncdim4' ))
 		stop("error, class of first passed argument is not ncdim!")
-	if( class(d2) != "ncdim4" ) 
+
+	#if( class(d2) != "ncdim4" ) 
+	if( ! inherits( d2, 'ncdim4' ))
 		stop("error, class of first passed argument is not ncdim!")
 
 	if( d1$name != d2$name )
@@ -28,12 +31,14 @@ ncdim_same <- function( d1, d2 ) {
 #
 ncdim_create <- function( nc, d, verbose=FALSE ) {  
 
-	if( class(nc) != "ncdf4" ) 
+	#if( class(nc) != "ncdf4" ) 
+	if( ! inherits( nc, 'ncdf4' ))
 		stop("ncdim_create: passed nc NOT of class ncdf4!")
 	if( verbose )
 		print(paste("ncdim_create: entering for ncid=",nc$id))
 
-	if( class(d) != "ncdim4" ) 
+	#if( class(d) != "ncdim4" ) 
+	if( ! inherits( d, 'ncdim4' ))
 		stop("ncdim_create: passed d NOT of class ncdim4!")
 	if( verbose )
 		print(paste("ncdim_create: entering for dim",d$name))
@@ -49,8 +54,8 @@ ncdim_create <- function( nc, d, verbose=FALSE ) {
 		dims_fqgn <- nc4_basename( d$name, dir=TRUE )
 		gidx      <- nc$fqgn2Rindex[[ dims_fqgn ]]
 		if( is.null(gidx))
-			stop(paste("internal error: did not find dim's fully qualified group name '", dims_fqgn,
-					"' in list of groups for file", nc$filename, sep=''))
+			stop(paste("ncdim_create internal error: did not find dim's fully qualified group name '", dims_fqgn,
+					"' in list of groups for file ", nc$filename, sep=''))
 		}
 	ncid2use  <- nc$group[[gidx]]$id
 
