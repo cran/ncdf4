@@ -1,7 +1,7 @@
-de89a16e3d4f1bb13e35a99044f12c5a *ChangeLog
-81f714d9f5efc25f9327e9ac19eb149f *DESCRIPTION
+a1babec2ca10442cda509b8dc72aa7a5 *ChangeLog
+92b3bea58bd18c2dfa96f8fe50b7d039 *DESCRIPTION
 36c1fbaaed8bc2fb94337130abd73011 *NAMESPACE
-ec82f7ae824f761e3c601d93221db92b *R/ncdf4.R
+2a9be161c6c0679f2d95ca9853f4f0cb *R/ncdf4.R
 0a7bf27c393bb67c373d98f3b891ec4d *R/ncdf4_priv.R
 ad1f30d6431d4acc6ed2a3da2047e35f *R/ncdf4_priv_att.R
 20946d389a779bc4ab8b31f9b3d56038 *R/ncdf4_priv_dim.R
@@ -31,9 +31,9 @@ c0a57d55856cb017d743c2700dd56e27 *man/ncvar_def.Rd
 49f06adb81a4b723a850397b4316fb9b *man/ncvar_rename.Rd
 5b3232754db0831fcc725c3e2d8c7552 *man/print.ncdf4.Rd
 78d681e25a4cad63030a0de445d13fa5 *src/Makevars.in
-2334eec1bffa3167e6420491b7bfc268 *src/Makevars.ucrt
+5b39044dba4ecd2483635c18317c001a *src/Makevars.ucrt
 a4c6502d32145531debeff453406b6cf *src/Makevars.win
-89bee7d66b92d4841b8bc527ae904b15 *src/ncdf.c
+0bda03c11a4c009494cc2b72e5468a67 *src/ncdf.c
 b4d36900efe0d6045f65d132445a9b6d *tools/aclocal.m4
 dd3bd371bb3102f9346afb7a1fc144fd *tools/configure.ac
 c385dcbf01f753e75aee4c5db9a66337 *tools/netcdf.m4

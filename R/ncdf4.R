@@ -131,7 +131,7 @@ nc_version <- function() {
 	
 	ncdf_lib_vers <- .Call("R_nc4_inq_libvers", PACKAGE="ncdf4")
 
-	return(paste("ncdf4_1.20_20221130 | underlying netcdf library version", ncdf_lib_vers ))
+	return(paste("ncdf4_1.21_20230105 | underlying netcdf library version", ncdf_lib_vers ))
 
 }
 

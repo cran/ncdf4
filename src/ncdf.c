@@ -2287,9 +2287,9 @@ SEXP R_nc4_get_vara_charvarid( SEXP sx_nc, SEXP sx_varid, SEXP sx_start, SEXP sx
 
 	ierr = nc_inq_varid( ncid, varname, &varid );
 	if( ierr != NC_NOERR ) {
-		sprintf( errmess, "the passed variable name [%s] does not exist in the file!",
+		Rprintf( "Error encountered with variable name '%s':", 
 			varname );
-		error( errmess );
+		error( "The specified variable does not exist in the file!" );
 		}
 
 	PROTECT( sx_numvarid = allocVector( INTSXP, 1 ));
