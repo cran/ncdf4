@@ -834,6 +834,10 @@ ncvar_get_inner <- function( ncid, varid, missval, addOffset=0., scaleFact=1.0, 
 		if( rv$error != 0 ) 
 			stop("C function R_nc4_get_var_text returned error")
 
+		if( verbose )
+			print(paste("Orig dim of rv$data: ",
+				paste0(dim(rv$data), collapse=' '), 
+				" now setting dim of string to strdim=", strdim ))
 		dim(rv$data) <- strdim
 		}
 

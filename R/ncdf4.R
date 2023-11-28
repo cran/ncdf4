@@ -131,7 +131,7 @@ nc_version <- function() {
 	
 	ncdf_lib_vers <- .Call("R_nc4_inq_libvers", PACKAGE="ncdf4")
 
-	return(paste("ncdf4_1.21_20230105 | underlying netcdf library version", ncdf_lib_vers ))
+	return(paste("ncdf4_1.22_20231127 | underlying netcdf library version", ncdf_lib_vers ))
 
 }
 
@@ -1993,7 +1993,7 @@ ncatt_put <- function( nc, varid, attname, attval, prec=NA,
 # Otherwise, if varid is a character string, it must be the fully
 # qualified var name.  (Note that it could also be a DIMVAR name.)
 #
-ncvar_put <- function( nc, varid=NA, vals=NULL, start=NA, count=NA, verbose=FALSE ) {
+ncvar_put <- function( nc, varid=NA, vals=NULL, start=NA, count=NA, verbose=FALSE, na_replace="fast" ) {
 
 	if( verbose ) print('ncvar_put: entering')
 
@@ -2147,6 +2147,12 @@ ncvar_put <- function( nc, varid=NA, vals=NULL, start=NA, count=NA, verbose=FALS
 	if( ! is.null(mv)) {
 		ierr = 0
 		if( storage.mode( vals ) == "double" ) {
+
+			if( na_replace == "safe" ) 
+				vals = vals + 0.0	# This triggers R to make a copy of vals, since vals is modified in the call below
+			else if( na_replace != "fast" )
+				stop(paste("Error, argument na_replace must be either the string 'fast' or 'safe', but got:", na_replace ))
+
 			rv <- .Call( "R_nc4_set_NA_to_val_double", 
 				vals, 
 				as.double(mv),

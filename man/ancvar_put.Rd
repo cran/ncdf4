@@ -8,7 +8,7 @@
  before calling this function).
 }
 \usage{
- ncvar_put( nc, varid, vals, start=NA, count=NA, verbose=FALSE ) 
+ ncvar_put( nc, varid, vals, start=NA, count=NA, verbose=FALSE, na_replace="fast" ) 
 }
 \arguments{
  \item{nc}{An object of class \code{ncdf4} (as returned by either function
@@ -31,6 +31,16 @@
  has an unlimited dimension, this argument must be specified.  As a special case, the value
  "-1" indicates that all entries along that dimension should be written.}
  \item{verbose}{If true, prints information while executing.}
+ \item{na_replace}{This is either the string "fast" or the string "safe". When
+ the 'vals' array is written out, NA's have to be replaced by the missing
+ value specified when the variable was created. If na_replace is "fast", then
+ this is done in-place without copying the 'vals' data array. This results
+ in the passed 'vals' array being modified such that NA's are replaced with 
+ the missing value. This is fast but not standard in R and may be unexpected.
+ If na_replace is "safe" then the vals array is copied before the NA replacement,
+ so that the vals array is not modified. This is more expected and standard R,
+ but can be slow and might cause memory issues if a very large 'vals' array 
+ is passed in. Default value is "fast".}
 }
 \references{
  http://dwpierce.com/software

@@ -249,6 +249,8 @@ ncdf4_format <- function( root_id ) {
 		return( 'NC_FORMAT_NETCDF4' )
 	else if( rv == 4 ) 
 		return( 'NC_FORMAT_NETCDF4_CLASSIC' )
+	else if( rv == 5 ) 
+		return( 'NC_FORMAT_CDF5' )
 	else
 		stop(paste("C call R_nc4_inq_format returned value",rv,"which is not recognized"))
 }

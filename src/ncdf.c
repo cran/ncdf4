@@ -180,7 +180,7 @@ R_CMethodDef cMethods[] = {
 	{"R_ncu4_get_varsize", 		(DL_FUNC) &R_ncu4_get_varsize, 		4}, 
 	{"R_ncu4_isdimvar", 		(DL_FUNC) &R_ncu4_isdimvar, 		2}, 
 
-	NULL 
+	{NULL}
 };
 
 /* For C calls that use SEXP type args */
@@ -203,7 +203,7 @@ R_CallMethodDef callMethods[] = {
 
 	{"R_nc4_inq_libvers", 		(DL_FUNC) &R_nc4_inq_libvers,  		0},
 
-	NULL
+	{NULL}
 };
 
 /*********************************************************************
@@ -1137,7 +1137,7 @@ SEXP R_nc4_get_att_string( SEXP sx_ncid, SEXP sx_varid, SEXP sx_attname, SEXP sx
 	 */
 	if( (ierr = nc_get_att_string( ncid, varid, attname, strings )) != NC_NOERR ) {
 		Rf_error( "Error, in call to R_nc4_get_att_string, failed to get the strings:\n" );
-		Rf_error( nc_strerror( ierr ) );
+		Rf_error( "%s\n", nc_strerror( ierr ) );
 		INTEGER(sx_ierr_returned)[0] = -1;
 		return( R_NilValue );
 		}
@@ -1234,10 +1234,10 @@ SEXP Rsx_nc4_put_vara_double( SEXP sx_ncid, SEXP sx_varid, SEXP sx_start,
 	if( verbose ) {
 		Rprintf( "Rsx_nc4_put_vara_double: about to write with start=" );
 		for( i=0; i<ndims; i++ ) 
-			Rprintf("%d ", s_start[i] );
+			Rprintf("%lu ", (unsigned long)s_start[i] );
 		Rprintf( "   count=" );
 		for( i=0; i<ndims; i++ ) 
-			Rprintf("%d ", s_count[i] );
+			Rprintf("%lu ", (unsigned long)s_count[i] );
 		Rprintf( "\n" );
 		}
 
@@ -1362,10 +1362,10 @@ void R_nc4_put_vara_text( int *ncid, int *varid, int *start,
 		idx_string = 0;
 		idx_char   = 1;
 		nstrings = s_count[idx_string];  /* number of character strings */
-/* Rprintf( "nstrings=%ld\n", nstrings ); */
+/* Rprintf( "nstrings=%lu\n", (unsigned long)nstrings ); */
 		for( i=0L; i<nstrings; i++ ) {
 			slen2use = ((slen < strlen(data[i])) ? slen : strlen(data[i]));
-/* Rprintf( "slen2use=%ld\n", slen2use ); */
+/* Rprintf( "slen2use=%lu\n", (unsigned long)slen2use ); */
 			s_count[idx_string] = 1L;
 			s_count[idx_char  ] = slen2use;
 			s_start[idx_string] = i + start[idx_string];
@@ -1374,10 +1374,10 @@ void R_nc4_put_vara_text( int *ncid, int *varid, int *start,
 			if( *retval != NC_NOERR ) {
 				Rprintf( "Error (loc #3) in R_nc_put_vara_text: %s\n", 
 					nc_strerror(*retval) );
-				Rprintf( "Here was C-style start I tried: %ld %ld\n", 
-					s_start[0], s_start[1] );
-				Rprintf( "Here was C-style count I tried: %ld %ld\n", 
-					s_count[0], s_count[1] );
+				Rprintf( "Here was C-style start I tried: %lu %lu\n", 
+					(unsigned long)s_start[0], (unsigned long)s_start[1] );
+				Rprintf( "Here was C-style count I tried: %lu %lu\n", 
+					(unsigned long)s_count[0], (unsigned long)s_count[1] );
 				return;
 				}
 			}
@@ -1389,12 +1389,12 @@ void R_nc4_put_vara_text( int *ncid, int *varid, int *start,
 		idx_char   = 2;
 		nj       = s_count[idx_j];
 		nstrings = s_count[idx_string];  /* number of character strings PER j */
-/* Rprintf( "nstrings=%ld  jn=%ld\n", nstrings, nj ); */
+/* Rprintf( "nstrings=%lu  jn=%lu\n", (unsigned long)nstrings, (unsigned long)nj ); */
 		stridx = 0L;
 		for( j=0L; j<nj; j++ ) 
 		for( i=0L; i<nstrings; i++ ) {
 			slen2use = ((slen < strlen(data[stridx])) ? slen : strlen(data[stridx]));
-/* Rprintf( "slen2use=%ld\n", slen2use ); */
+/* Rprintf( "slen2use=%lu\n", (unsigned long)slen2use ); */
 			s_count[idx_j     ] = 1L;
 			s_count[idx_string] = 1L;
 			s_count[idx_char  ] = slen2use;
@@ -1406,10 +1406,10 @@ void R_nc4_put_vara_text( int *ncid, int *varid, int *start,
 			if( *retval != NC_NOERR ) {
 				Rprintf( "Error (loc #4) in R_nc_put_vara_text: %s\n", 
 					nc_strerror(*retval) );
-				Rprintf( "Here was C-style start I tried: %ld %ld %ld\n", 
-					s_start[0], s_start[1], s_start[2] );
-				Rprintf( "Here was C-style count I tried: %ld %ld %ld\n", 
-					s_count[0], s_count[1], s_count[2] );
+				Rprintf( "Here was C-style start I tried: %lu %lu %lu\n", 
+					(unsigned long)s_start[0], (unsigned long)s_start[1], (unsigned long)s_start[2] );
+				Rprintf( "Here was C-style count I tried: %lu %lu %lu\n", 
+					(unsigned long)s_count[0], (unsigned long)s_count[1], (unsigned long)s_count[2] );
 				return;
 				}
 			}
@@ -1423,13 +1423,13 @@ void R_nc4_put_vara_text( int *ncid, int *varid, int *start,
 		nk       = s_count[idx_k];
 		nj       = s_count[idx_j];
 		nstrings = s_count[idx_string];  /* number of character strings PER j,k */
-/* Rprintf( "nstrings=%ld  nj=%ld  nk=%ld\n", nstrings, nj, nk ); */
+/* Rprintf( "nstrings=%lu  nj=%lu  nk=%lu\n", (unsigned long)nstrings, (unsigned long)nj, (unsigned long)nk ); */
 		stridx = 0L;
 		for( k=0L; k<nk; k++ ) 
 		for( j=0L; j<nj; j++ ) 
 		for( i=0L; i<nstrings; i++ ) {
 			slen2use = ((slen < strlen(data[stridx])) ? slen : strlen(data[stridx]));
-/* Rprintf( "slen2use=%ld\n", slen2use ); */
+/* Rprintf( "slen2use=%lu\n", (unsigned long)slen2use ); */
 			s_count[idx_k     ] = 1L;
 			s_count[idx_j     ] = 1L;
 			s_count[idx_string] = 1L;
@@ -1443,10 +1443,10 @@ void R_nc4_put_vara_text( int *ncid, int *varid, int *start,
 			if( *retval != NC_NOERR ) {
 				Rprintf( "Error (loc #5) in R_nc_put_vara_text: %s\n", 
 					nc_strerror(*retval) );
-				Rprintf( "Here was C-style start I tried: %ld %ld %ld %ld\n", 
-					s_start[0], s_start[1], s_start[2], s_start[3] );
-				Rprintf( "Here was C-style count I tried: %ld %ld %ld %ld\n", 
-					s_count[0], s_count[1], s_count[2], s_count[3] );
+				Rprintf( "Here was C-style start I tried: %lu %lu %lu %lu\n", 
+					(unsigned long)s_start[0], (unsigned long)s_start[1], (unsigned long)s_start[2], (unsigned long)s_start[3] );
+				Rprintf( "Here was C-style count I tried: %lu %lu %lu %lu\n", 
+					(unsigned long)s_count[0], (unsigned long)s_count[1], (unsigned long)s_count[2], (unsigned long)s_count[3] );
 				return;
 				}
 			}
@@ -1907,6 +1907,10 @@ SEXP R_nc4_inq_format(SEXP sx_root_id, SEXP sx_ierr_retval)
 			iretval = 4;
 			break;
 
+		case NC_FORMAT_CDF5:
+			iretval = 5;
+			break;
+
 		default:
 			Rprintf( "Error in R_nc4_inq_format: unrecognized format integer returned: %d\n", iformat );
 			INTEGER(sx_ierr_retval)[0] = -1;	/* Indicate error condition */
@@ -2260,7 +2264,7 @@ void R_ncu4_calc_start_count( int ncid, int varid, int *start_arg, int len_start
 	/*
 	Rprintf( "Final count to use: [" );
 	for( i=0; i<len_count; i++ ) {
-		Rprintf( "%ld", count[i] );
+		Rprintf( "%lu", (unsigned long)count[i] );
 		if( i < (len_count-1))
 			Rprintf( "," );
 		}
@@ -2278,7 +2282,6 @@ void R_ncu4_calc_start_count( int ncid, int varid, int *start_arg, int len_start
  */
 SEXP R_nc4_get_vara_charvarid( SEXP sx_nc, SEXP sx_varid, SEXP sx_start, SEXP sx_count ) 
 {
-	char	errmess[1024];
 	int	varid, ierr, ncid;
 	SEXP	retval, sx_numvarid;
 	const char *varname = CHAR(STRING_ELT(sx_varid,0)); 
@@ -2636,7 +2639,7 @@ SEXP R_nc4_get_vara_string( SEXP sx_nc, SEXP sx_varid, SEXP sx_start, SEXP sx_co
 	ss = (char **)malloc( sizeof( char *) * tot_count );
 	if( ss == NULL ) {
 		INTEGER( sx_reterror)[0] = -1;
-		error("ncdf4 library: routine R_nc4_get_vara_string: Error trying to allocate space to read the vlen strings: total count of strings requested: %ld\n", tot_count );
+		error("ncdf4 library: routine R_nc4_get_vara_string: Error trying to allocate space to read the vlen strings: total count of strings requested: %lu\n", (unsigned long)tot_count );
 		}
 
 	if( (ierr = nc_get_vara_string( ncid, varid, start, count, ss )) != 0 ) {
