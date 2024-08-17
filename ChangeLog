@@ -1,3 +1,6 @@
+Release 1.23 (2024-08-05) New version of Makevars.ucrt as per request from 
+Tomas Kalibera
+
 Release 1.22 (2023-03-01) Added "na_replace" argument to ncvar_put().
 
 Release 1.21 (2023-01-05) Minor change to fix compatibility with
