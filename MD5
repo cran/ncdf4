@@ -1,7 +1,7 @@
-a33090538a9b6a50ffb1ca6705e71303 *ChangeLog
-2ad3cf548872deb69b283eec22a6232f *DESCRIPTION
+060d0a626aaea8f6e61042752268564d *ChangeLog
+d81100d89f90f7e6cb9b5b41a3b00cc0 *DESCRIPTION
 36c1fbaaed8bc2fb94337130abd73011 *NAMESPACE
-d5195a9355b03206b8dad6c62906d21b *R/ncdf4.R
+376774c7d1a5a3db940f5205d71c7b13 *R/ncdf4.R
 d4a8afa839a1b5ecc1f3cfb129de9e40 *R/ncdf4_priv.R
 ad1f30d6431d4acc6ed2a3da2047e35f *R/ncdf4_priv_att.R
 20946d389a779bc4ab8b31f9b3d56038 *R/ncdf4_priv_dim.R
@@ -9,7 +9,7 @@ f8465510853d66aad16c8e4d4867bfec *R/ncdf4_priv_group.R
 b57fcbe68b987235980f0c55f0213ffe *R/ncdf4_priv_var.R
 375cb891a49b0b7c57a1aff35daf1193 *cleanup
 d166b74624cd62256b6491b849d5e3ee *configure
-dd3bd371bb3102f9346afb7a1fc144fd *configure.ac
+fbcbeaace32d1a4088723cb7c29486d9 *configure.ac
 a06df3f633622526b02785e5442b4835 *inst/HDF5_COPYING
 11abb9105fa22029de3829b88fdb47ac *man/ancvar_put.Rd
 b256db50eaf9b1638ae3badef997ac4a *man/nc_close.Rd

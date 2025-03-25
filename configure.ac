@@ -30,7 +30,7 @@ if test $NETCDF_V4 = "no"; then
 	echo "the full version of netcdf-4 with HDF-5 support, then please install"
 	echo "the old, deprecated ncdf package instead."
 	echo "-------------------------------------------------------------------"
-	exit -1
+	exit 1
 fi
 
 HAVE_NETCDF=TRUE
@@ -66,7 +66,7 @@ NETCDF_CC_ARG1=$1
 set $CC
 R_CC_ARG1=$1
 TEST_EMIT_WARNING=0
-if test x$NETCDF_CC_ARG1 != x$R_CC_ARG1 -o $TEST_EMIT_WARNING -eq 1; then
+if [ x$NETCDF_CC_ARG1 != x$R_CC_ARG1 ] || [ $TEST_EMIT_WARNING -eq 1 ]; then
 
 	#------------------------------------------------------------------------------
 	# By default, we emit a warning if the compilers of R and netcdf are different.
@@ -109,10 +109,10 @@ if test x$NETCDF_CC_ARG1 != x$R_CC_ARG1 -o $TEST_EMIT_WARNING -eq 1; then
 	# We don't bother emitting the warning if the two compilers in
 	# use are clang and gcc -- supposedly they are compatible
 	#-------------------------------------------------------------
-	if test $NETCDF_IS_CLANG -eq 1 -a $R_IS_GCC   -eq 1; then
+	if [ $NETCDF_IS_CLANG -eq 1 ] && [ $R_IS_GCC -eq 1 ]; then
 		emit_warning=0
 	fi
-	if test $NETCDF_IS_GCC   -eq 1 -a $R_IS_CLANG -eq 1; then
+	if [ $NETCDF_IS_GCC   -eq 1 ] && [ $R_IS_CLANG -eq 1 ]; then
 		emit_warning=0
 	fi
 
@@ -120,16 +120,16 @@ if test x$NETCDF_CC_ARG1 != x$R_CC_ARG1 -o $TEST_EMIT_WARNING -eq 1; then
 	# Both same, but different exact names of compilers...
 	# not sure if this actually guarantees success??
 	#-----------------------------------------------------
-	if test $NETCDF_IS_CLANG -eq 1 -a $R_IS_CLANG -eq 1; then
+	if [ $NETCDF_IS_CLANG -eq 1 ] && [ $R_IS_CLANG -eq 1 ]; then
 		emit_warning=0
 	fi
-	if test $NETCDF_IS_GCC -eq 1 -a $R_IS_GCC -eq 1; then
+	if [ $NETCDF_IS_GCC -eq 1 ] && [ $R_IS_GCC -eq 1 ]; then
 		emit_warning=0
 	fi
 
 	echo "netcdf cc arg1: $NETCDF_CC_ARG1  R cc arg1: $R_CC_ARG1 R_IS_GCC: $R_IS_GCC R_IS_CLANG: $R_IS_CLANG NETCDF_IS_GCC: $NETCDF_IS_GCC NETCDF_IS_CLANG: $NETCDF_IS_CLANG  emit_warning: $emit_warning"
 
-	if test $emit_warning -eq 1 -o $TEST_EMIT_WARNING -eq 1; then
+	if [ $emit_warning -eq 1 ] || [ $TEST_EMIT_WARNING -eq 1 ]; then
 		echo " "
 		echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
 		echo "Dear ncdf4 user: The software configuration tool thinks that perhaps different compilers are being"
